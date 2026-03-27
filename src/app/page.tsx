@@ -144,8 +144,8 @@ export default function Dashboard() {
         </div>
 
         <div className="flex-1 flex overflow-hidden relative z-0">
-          {/* Table Area - Using the Warm background requested by User */}
-          <div className="flex-1 overflow-y-auto p-10 bg-[#fffbeb]/50">
+          {/* Table Area - Reverting outer background to light grey/white as requested */}
+          <div className="flex-1 overflow-y-auto p-10 bg-[#f8fafc]">
             <div className="bg-white rounded-[2rem] shadow-xl border border-slate-200/60 overflow-hidden ring-1 ring-black/5">
               <table className="w-full text-left border-collapse text-[12px]">
                 <thead>
@@ -158,10 +158,9 @@ export default function Dashboard() {
                     <th className="px-8 py-5 font-black text-slate-400 uppercase tracking-widest text-right whitespace-nowrap">Current Status</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-white/20 font-bold">
+                <tbody className="divide-y divide-slate-50 font-bold">
                   {filteredComplaints.length > 0 ? (
                     filteredComplaints.map((c) => {
-                      // Priority-based Row Coloring restored as per User Request
                       const rowColor =
                         c.priority === 'Critical' ? "bg-rose-100" :
                           c.priority === 'High' ? "bg-amber-50" :
