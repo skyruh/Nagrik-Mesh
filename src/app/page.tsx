@@ -34,21 +34,20 @@ import { cn } from '../lib/utils';
 export default function Dashboard() {
   const [complaints, setComplaints] = useState<ExtendedComplaint[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>('CPG-2023-001');
-  const [activeTab, setActiveTab] = useState('My Queue'); // Defaulting to My Queue now
+  const [activeTab, setActiveTab] = useState('My Queue');
 
-  // Filtering states
+  // Filtering states - Default Department to 'MoRD' as it is the officer's primary queue
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('All');
   const [priorityFilter, setPriorityFilter] = useState<string>('All');
-  const [deptFilter, setDeptFilter] = useState<string>('All');
-  const [viewFilter, setViewFilter] = useState<string>('Active Pipeline'); // New view filter for combined logic
+  const [deptFilter, setDeptFilter] = useState<string>('MoRD');
 
   useEffect(() => {
     const processed = getProcessedComplaints(MOCK_COMPLAINTS as any);
     setComplaints(processed);
   }, []);
 
-  // Combined Data Logic under "My Queue"
+  // Combined Data Logic under "My Queue" using standard filters
   const filteredComplaints = useMemo(() => {
     return complaints.filter(c => {
       const matchesSearch =
@@ -60,25 +59,9 @@ export default function Dashboard() {
       const matchesPriority = priorityFilter === 'All' || c.priority === priorityFilter;
       const matchesDept = deptFilter === 'All' || c.department === deptFilter;
 
-      const standardFilters = matchesSearch && matchesStatus && matchesPriority && matchesDept;
-
-      if (activeTab === 'My Queue') {
-        // Combination Logic:
-        if (viewFilter === 'High Priority Alerts') {
-          // Old Dashboard logic: System-wide urgent items
-          return standardFilters && (c.priority === 'Critical' || c.priority === 'High' || c.status === 'Escalated');
-        }
-        if (viewFilter === 'Active Pipeline') {
-          // Old My Queue logic: Officer-specific tasks
-          return standardFilters && (c.status === 'Pending' || c.status === 'Processing') && c.department === 'MoRD';
-        }
-        // Default: Show all MoRD items
-        return standardFilters && c.department === 'MoRD';
-      }
-
-      return standardFilters;
+      return matchesSearch && matchesStatus && matchesPriority && matchesDept;
     });
-  }, [complaints, searchQuery, statusFilter, priorityFilter, deptFilter, activeTab, viewFilter]);
+  }, [complaints, searchQuery, statusFilter, priorityFilter, deptFilter]);
 
   const selectedComplaint = complaints.find(c => c.id === selectedId);
 
@@ -98,7 +81,7 @@ export default function Dashboard() {
   };
 
   const renderContent = () => {
-    // Dashboard now shows a placeholder as requested by the user's screenshot
+    // Dashboard now shows a placeholder as per user request
     if (activeTab === 'Dashboard') return <ViewModule title="System Intelligence" icon={<Zap size={48} />} />;
     if (activeTab === 'Analytics') return <ViewModule title="Visual Intelligence" icon={<BarChart3 size={48} />} />;
     if (activeTab === 'Reports') return <ViewModule title="Governance Archive" icon={<FileText size={48} />} />;
@@ -106,31 +89,15 @@ export default function Dashboard() {
 
     return (
       <>
-        {/* Filters Strip */}
+        {/* Filters Strip - Cleaned up to show standard dropdowns */}
         <div className="px-10 py-5 flex items-center justify-between bg-white border-b border-slate-200 shadow-sm z-[100] relative">
-          <div className="flex items-center gap-4">
-            {/* View Switcher Filter added to combine Dashboard/MyQueue functionality */}
-            <div className="flex bg-slate-100 p-1 rounded-xl mr-4 shadow-inner">
-              <button
-                onClick={() => setViewFilter('Active Pipeline')}
-                className={cn(
-                  "px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-tighter transition-all",
-                  viewFilter === 'Active Pipeline' ? "bg-white text-slate-900 shadow-sm" : "text-slate-400 hover:text-slate-600"
-                )}
-              >
-                Active Pipeline
-              </button>
-              <button
-                onClick={() => setViewFilter('High Priority Alerts')}
-                className={cn(
-                  "px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-tighter transition-all",
-                  viewFilter === 'High Priority Alerts' ? "bg-white text-rose-600 shadow-sm" : "text-slate-400 hover:text-slate-600"
-                )}
-              >
-                High Priority Alerts
-              </button>
-            </div>
-
+          <div className="flex items-center gap-6">
+            <FilterSelector
+              label="View Sector"
+              value={deptFilter}
+              options={['All', 'MoHFW', 'MoE', 'MoRD']}
+              onChange={setDeptFilter}
+            />
             <FilterSelector
               label="Status"
               value={statusFilter}
@@ -161,10 +128,10 @@ export default function Dashboard() {
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
               <input
                 type="text"
-                placeholder="Identify specific grievance..."
+                placeholder="Search grievances..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="bg-slate-50 border border-slate-200 rounded-2xl pl-12 pr-6 py-2.5 text-xs w-72 focus:ring-4 focus:ring-accent/5 focus:border-accent outline-none font-bold text-slate-800 shadow-inner transition-all placeholder:text-slate-300"
+                className="bg-slate-50 border border-slate-200 rounded-2xl pl-12 pr-6 py-2.5 text-xs w-64 focus:ring-4 focus:ring-accent/5 focus:border-accent outline-none font-bold text-slate-800 shadow-inner placeholder:text-slate-300"
               />
             </div>
           </div>
@@ -455,7 +422,7 @@ function FilterSelector({ label, value, options, onChange }: { label: string, va
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
           "flex items-center gap-3 px-5 py-2.5 border-[1.5px] rounded-2xl shadow-sm cursor-pointer transition-all hover:bg-slate-50 select-none",
-          value !== 'All' ? "border-accent bg-accent/5 ring-4 ring-accent/5" : "bg-white border-slate-100",
+          value !== 'All' && value !== 'MoRD' ? "border-accent bg-accent/5 ring-4 ring-accent/5" : "bg-white border-slate-100",
           "relative z-[150]"
         )}
       >
