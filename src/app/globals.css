@@ -32,8 +32,6 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: 'Inter', sans-serif;
-  overflow-x: hidden;
 }
 
 /* Dashboard Specific Classes */

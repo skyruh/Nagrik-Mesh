@@ -3,7 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { cn } from "../lib/utils";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Nagrik Mesh | AI Execution Layer",
@@ -17,7 +17,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={cn(inter.variable, "antialiased font-sans flex min-h-screen bg-[#f3f4f6]")}>
+      <body className={cn(inter.className, "antialiased flex h-screen overflow-hidden bg-[#f3f4f6]")}>
         {/* Sidebar matching Image 1 */}
         <aside className="w-64 bg-[#232f3e] flex flex-col p-0 z-10 shadow-xl overflow-hidden shrink-0">
           <div className="p-6">
@@ -51,7 +51,7 @@ export default function RootLayout({
           </div>
         </aside>
 
-        <main className="flex-1 overflow-y-auto flex flex-col">
+        <main className="flex-1 overflow-hidden flex flex-col">
           {/* Top Bar matching Image 1 */}
           <header className="h-14 bg-white border-b border-slate-200 flex items-center justify-between px-8 shrink-0">
             <div className="flex items-center gap-2">
@@ -71,7 +71,7 @@ export default function RootLayout({
             </div>
           </header>
 
-          <div className="flex-1 overflow-auto bg-[#fafbfc]">
+          <div className="flex-1 overflow-hidden bg-[#fafbfc]">
             {children}
           </div>
         </main>
