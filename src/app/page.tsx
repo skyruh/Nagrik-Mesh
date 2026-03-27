@@ -22,7 +22,9 @@ import {
   PieChart,
   History,
   TrendingUp,
-  ShieldCheck
+  ShieldCheck,
+  Zap,
+  Activity
 } from 'lucide-react';
 import { MOCK_COMPLAINTS } from '../lib/mock-data';
 import { getProcessedComplaints } from '../lib/engine';
@@ -32,20 +34,21 @@ import { cn } from '../lib/utils';
 export default function Dashboard() {
   const [complaints, setComplaints] = useState<ExtendedComplaint[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>('CPG-2023-001');
-  const [activeTab, setActiveTab] = useState('Dashboard');
+  const [activeTab, setActiveTab] = useState('My Queue'); // Defaulting to My Queue now
 
   // Filtering states
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('All');
   const [priorityFilter, setPriorityFilter] = useState<string>('All');
   const [deptFilter, setDeptFilter] = useState<string>('All');
+  const [viewFilter, setViewFilter] = useState<string>('Active Pipeline'); // New view filter for combined logic
 
   useEffect(() => {
     const processed = getProcessedComplaints(MOCK_COMPLAINTS as any);
     setComplaints(processed);
   }, []);
 
-  // Logical View Separation
+  // Combined Data Logic under "My Queue"
   const filteredComplaints = useMemo(() => {
     return complaints.filter(c => {
       const matchesSearch =
@@ -59,17 +62,23 @@ export default function Dashboard() {
 
       const standardFilters = matchesSearch && matchesStatus && matchesPriority && matchesDept;
 
-      if (activeTab === 'Dashboard') {
-        return standardFilters && (c.priority === 'Critical' || c.priority === 'High' || c.status === 'Escalated');
-      }
-
       if (activeTab === 'My Queue') {
-        return standardFilters && (c.status === 'Pending' || c.status === 'Processing') && c.department === 'MoRD';
+        // Combination Logic:
+        if (viewFilter === 'High Priority Alerts') {
+          // Old Dashboard logic: System-wide urgent items
+          return standardFilters && (c.priority === 'Critical' || c.priority === 'High' || c.status === 'Escalated');
+        }
+        if (viewFilter === 'Active Pipeline') {
+          // Old My Queue logic: Officer-specific tasks
+          return standardFilters && (c.status === 'Pending' || c.status === 'Processing') && c.department === 'MoRD';
+        }
+        // Default: Show all MoRD items
+        return standardFilters && c.department === 'MoRD';
       }
 
       return standardFilters;
     });
-  }, [complaints, searchQuery, statusFilter, priorityFilter, deptFilter, activeTab]);
+  }, [complaints, searchQuery, statusFilter, priorityFilter, deptFilter, activeTab, viewFilter]);
 
   const selectedComplaint = complaints.find(c => c.id === selectedId);
 
@@ -89,6 +98,8 @@ export default function Dashboard() {
   };
 
   const renderContent = () => {
+    // Dashboard now shows a placeholder as requested by the user's screenshot
+    if (activeTab === 'Dashboard') return <ViewModule title="System Intelligence" icon={<Zap size={48} />} />;
     if (activeTab === 'Analytics') return <ViewModule title="Visual Intelligence" icon={<BarChart3 size={48} />} />;
     if (activeTab === 'Reports') return <ViewModule title="Governance Archive" icon={<FileText size={48} />} />;
     if (activeTab === 'User Management') return <ViewModule title="Registry Access" icon={<ShieldCheck size={48} />} />;
@@ -97,7 +108,29 @@ export default function Dashboard() {
       <>
         {/* Filters Strip */}
         <div className="px-10 py-5 flex items-center justify-between bg-white border-b border-slate-200 shadow-sm z-[100] relative">
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-4">
+            {/* View Switcher Filter added to combine Dashboard/MyQueue functionality */}
+            <div className="flex bg-slate-100 p-1 rounded-xl mr-4 shadow-inner">
+              <button
+                onClick={() => setViewFilter('Active Pipeline')}
+                className={cn(
+                  "px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-tighter transition-all",
+                  viewFilter === 'Active Pipeline' ? "bg-white text-slate-900 shadow-sm" : "text-slate-400 hover:text-slate-600"
+                )}
+              >
+                Active Pipeline
+              </button>
+              <button
+                onClick={() => setViewFilter('High Priority Alerts')}
+                className={cn(
+                  "px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-tighter transition-all",
+                  viewFilter === 'High Priority Alerts' ? "bg-white text-rose-600 shadow-sm" : "text-slate-400 hover:text-slate-600"
+                )}
+              >
+                High Priority Alerts
+              </button>
+            </div>
+
             <FilterSelector
               label="Status"
               value={statusFilter}
@@ -109,12 +142,6 @@ export default function Dashboard() {
               value={priorityFilter}
               options={['All', 'Critical', 'High', 'Moderate', 'Low']}
               onChange={setPriorityFilter}
-            />
-            <FilterSelector
-              label="Dept"
-              value={deptFilter}
-              options={['All', 'MoHFW', 'MoE', 'MoRD']}
-              onChange={setDeptFilter}
             />
           </div>
 
@@ -134,17 +161,17 @@ export default function Dashboard() {
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
               <input
                 type="text"
-                placeholder="Search active grievances..."
+                placeholder="Identify specific grievance..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="bg-slate-50 border border-slate-200 rounded-2xl pl-12 pr-6 py-2.5 text-xs w-72 focus:ring-4 focus:ring-accent/5 focus:border-accent outline-none font-bold text-slate-800 transition-all placeholder:text-slate-300 shadow-inner"
+                className="bg-slate-50 border border-slate-200 rounded-2xl pl-12 pr-6 py-2.5 text-xs w-72 focus:ring-4 focus:ring-accent/5 focus:border-accent outline-none font-bold text-slate-800 shadow-inner transition-all placeholder:text-slate-300"
               />
             </div>
           </div>
         </div>
 
         <div className="flex-1 flex overflow-hidden relative z-0">
-          {/* Table Area - Reverting outer background to light grey/white as requested */}
+          {/* Table Area */}
           <div className="flex-1 overflow-y-auto p-10 bg-[#f8fafc]">
             <div className="bg-white rounded-[2rem] shadow-xl border border-slate-200/60 overflow-hidden ring-1 ring-black/5">
               <table className="w-full text-left border-collapse text-[12px]">
@@ -336,12 +363,12 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="flex h-screen w-full bg-[#f3f4f6] overflow-hidden antialiased">
+    <div className="flex h-screen w-full bg-[#f3f4f6] overflow-hidden antialiased font-sans">
       {/* Sidebar */}
       <aside className="w-64 bg-[#232f3e] flex flex-col p-0 z-[1000] shadow-2xl shrink-0">
         <div className="p-6">
           <div className="flex items-center gap-3 mb-10">
-            <div className="h-10 w-10 rounded-xl bg-white/10 flex items-center justify-center border border-white/5">
+            <div className="h-10 w-10 rounded-xl bg-white/10 flex items-center justify-center border border-white/5 shadow-inner">
               <img
                 src="https://upload.wikimedia.org/wikipedia/commons/5/55/Emblem_of_India.svg"
                 alt="Gov of India"
@@ -349,7 +376,7 @@ export default function Dashboard() {
               />
             </div>
             <div>
-              <h1 className="text-white font-black text-sm leading-tight uppercase">Nagrik Mesh</h1>
+              <h1 className="text-white font-black text-sm leading-tight tracking-wider uppercase">Nagrik Mesh</h1>
               <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest opacity-60">Digital India</p>
             </div>
           </div>
@@ -357,34 +384,38 @@ export default function Dashboard() {
           <nav className="space-y-1">
             <SidebarItem label="Dashboard" icon={<LayoutDashboard size={16} />} active={activeTab === 'Dashboard'} onClick={() => setActiveTab('Dashboard')} />
             <SidebarItem label="My Queue" icon={<Inbox size={16} />} active={activeTab === 'My Queue'} onClick={() => setActiveTab('My Queue')} />
-            <div className="h-px bg-white/5 my-4" />
+            <div className="h-px bg-white/5 my-4 mx-2" />
             <SidebarItem label="Analytics" icon={<BarChart3 size={16} />} active={activeTab === 'Analytics'} onClick={() => setActiveTab('Analytics')} />
             <SidebarItem label="Reports" icon={<FileText size={16} />} active={activeTab === 'Reports'} onClick={() => setActiveTab('Reports')} />
             <SidebarItem label="User Management" icon={<Users size={16} />} active={activeTab === 'User Management'} onClick={() => setActiveTab('User Management')} />
           </nav>
         </div>
         <div className="mt-auto p-6 space-y-1 border-t border-white/5 bg-black/10">
-          <SidebarItem label="Settings" secondary />
+          <SidebarItem label="Settings" icon={<Activity size={16} />} secondary />
           <SidebarItem label="Help Center" secondary />
         </div>
       </aside>
 
       <main className="flex-1 flex flex-col overflow-hidden bg-[#f8fafc] z-0 relative">
-        <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-10 shrink-0 z-[110] shadow-sm relative">
+        <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-10 shrink-0 z-[110] relative shadow-sm">
           <div className="flex items-center gap-4">
-            <div className="h-5 w-1 bg-accent rounded-full" />
+            <div className="h-5 w-1 bg-accent rounded-full shadow-[0_0_8px_rgba(59,130,246,0.5)]" />
             <h2 className="text-slate-800 font-extrabold text-lg tracking-tight">
               {activeTab} <span className="text-slate-400 font-medium text-sm ml-2">/ Intelligence Controller</span>
             </h2>
           </div>
 
           <div className="flex items-center gap-8">
+            <button className="relative p-2 text-slate-400 hover:text-accent transition-colors">
+              <Bell size={20} />
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full border-2 border-white shadow-sm" />
+            </button>
             <div className="flex items-center gap-4 text-[12px]">
               <div className="flex flex-col text-right">
                 <span className="text-slate-900 font-black">A. Sharma</span>
                 <span className="text-slate-400 font-bold text-[10px] uppercase tracking-tighter">Joint Secretary</span>
               </div>
-              <div className="h-10 w-10 rounded-2xl bg-slate-100 border border-slate-200 shadow-sm flex items-center justify-center font-black text-slate-500">
+              <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-slate-50 to-slate-200 border border-slate-200 shadow-sm flex items-center justify-center font-black text-slate-500 transition-transform hover:scale-105 cursor-pointer">
                 AS
               </div>
             </div>
@@ -402,14 +433,14 @@ function SidebarItem({ label, icon, active, onClick, secondary }: { label: strin
     <div
       onClick={onClick}
       className={cn(
-        "px-5 py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest cursor-pointer transition-all flex items-center gap-4 border border-transparent",
+        "px-5 py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest cursor-pointer transition-all flex items-center gap-4 border border-transparent group",
         active
-          ? "bg-accent/10 text-white shadow-[inset_0_0_12px_rgba(59,130,246,0.3)] border-accent/20"
+          ? "bg-accent text-white shadow-[0_10px_20px_-5px_rgba(59,130,246,0.4)] border-white/10"
           : "text-slate-500 hover:text-white hover:bg-white/5 active:scale-95",
         secondary && "py-3 text-slate-600 opacity-40 hover:opacity-100"
       )}
     >
-      <span className={cn("transition-colors", active ? "text-accent" : "text-slate-600")}>{icon}</span>
+      <span className={cn("transition-colors", active ? "text-white" : "text-slate-600 group-hover:text-accent")}>{icon}</span>
       {label}
     </div>
   )
@@ -424,7 +455,7 @@ function FilterSelector({ label, value, options, onChange }: { label: string, va
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
           "flex items-center gap-3 px-5 py-2.5 border-[1.5px] rounded-2xl shadow-sm cursor-pointer transition-all hover:bg-slate-50 select-none",
-          value !== 'All' ? "border-accent bg-accent/5" : "bg-white border-slate-100",
+          value !== 'All' ? "border-accent bg-accent/5 ring-4 ring-accent/5" : "bg-white border-slate-100",
           "relative z-[150]"
         )}
       >
@@ -438,7 +469,7 @@ function FilterSelector({ label, value, options, onChange }: { label: string, va
       {isOpen && (
         <>
           <div className="fixed inset-0 bg-black/[0.01] z-[9000]" onClick={() => setIsOpen(false)} />
-          <div className="absolute top-full left-0 mt-3 w-56 bg-white border border-slate-200 rounded-[2rem] shadow-[0_40px_100px_-20px_rgba(0,0,0,0.5)] py-4 z-[9999] overflow-hidden ring-1 ring-black/10">
+          <div className="absolute top-full left-0 mt-3 w-56 bg-white border border-slate-200 rounded-[2rem] shadow-[0_40px_100px_-20px_rgba(0,0,0,0.5)] py-4 z-[9999] overflow-hidden ring-1 ring-black/10 animate-in slide-in-from-top-2 duration-200">
             {options.map(opt => (
               <div
                 key={opt}
@@ -463,7 +494,7 @@ function FilterSelector({ label, value, options, onChange }: { label: string, va
 
 function AnalysisCard({ label, value, urgent }: { label: string, value: string, urgent?: boolean }) {
   return (
-    <div className="p-5 rounded-3xl bg-white border border-slate-100 shadow-sm flex flex-col gap-1">
+    <div className="p-5 rounded-3xl bg-white border border-slate-100 shadow-sm flex flex-col gap-1 transition-all hover:shadow-md">
       <p className="text-[9px] font-black text-slate-300 uppercase tracking-widest">{label}</p>
       <p className={cn(
         "text-xs font-black uppercase tracking-tight",
@@ -491,18 +522,22 @@ function ActionBtn({ icon, label, color, onClick, active }: { icon: React.ReactN
 
 function ViewModule({ title, icon }: { title: string, icon: React.ReactNode }) {
   return (
-    <div className="flex-1 flex flex-col items-center justify-center bg-slate-50/50 p-20 text-center animate-in fade-in zoom-in duration-500">
-      <div className="p-16 rounded-[4rem] bg-white shadow-2xl border border-slate-100 flex flex-col items-center gap-10 max-w-lg relative overflow-hidden">
+    <div className="flex-1 flex flex-col items-center justify-center bg-[#f8fafc] p-20 text-center animate-in fade-in zoom-in duration-500">
+      <div className="p-16 rounded-[4rem] bg-white shadow-[0_40px_100px_-20px_rgba(0,0,0,0.1)] border border-slate-100 flex flex-col items-center gap-10 max-w-lg relative overflow-hidden group">
         <div className="absolute top-0 left-0 w-full h-2 bg-accent opacity-20" />
-        <div className="p-8 rounded-[2.5rem] bg-slate-900 text-white shadow-2xl">
+        <div className="p-8 rounded-[2.5rem] bg-slate-950 text-white shadow-2xl transition-transform duration-500 group-hover:scale-110">
           {icon}
         </div>
-        <div className="space-y-4">
-          <h3 className="text-3xl font-black text-slate-900 uppercase italic tracking-tighter">{title}</h3>
-          <div className="h-1 w-12 bg-accent mx-auto rounded-full" />
+        <div className="space-y-6">
+          <h3 className="text-3xl font-black text-slate-950 uppercase italic tracking-tighter">{title}</h3>
+          <div className="h-1.5 w-12 bg-accent mx-auto rounded-full shadow-[0_0_10px_rgba(59,130,246,0.5)]" />
           <p className="text-slate-400 font-bold text-sm leading-relaxed max-w-xs mx-auto">
             This executive module is currently undergoing security clearance and data synchronization with CPGRAMS core.
           </p>
+        </div>
+        <div className="flex items-center gap-3 bg-slate-50 px-6 py-3 rounded-full border border-slate-100">
+          <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+          <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Awaiting Linkage</span>
         </div>
       </div>
     </div>
