@@ -37,7 +37,7 @@ export default function Dashboard() {
   const [complaints, setComplaints] = useState<ExtendedComplaint[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>('CPG-2023-001');
   const [activeTab, setActiveTab] = useState('My Queue');
-  const [officerNote, setOfficerNote] = useState(''); // New state for officer notes
+  const [officerNote, setOfficerNote] = useState('');
 
   // Filtering states
   const [searchQuery, setSearchQuery] = useState('');
@@ -85,7 +85,7 @@ export default function Dashboard() {
 
   const renderContent = () => {
     if (activeTab === 'Dashboard') return <ViewModule title="System Intelligence" icon={<Zap size={48} />} />;
-    if (activeTab === 'Analytics') return <ViewModule title="Visual Intelligence" icon={< BarChart3 size={48} />} />;
+    if (activeTab === 'Analytics') return <ViewModule title="Visual Intelligence" icon={<BarChart3 size={48} />} />;
     if (activeTab === 'Reports') return <ViewModule title="Governance Archive" icon={<FileText size={48} />} />;
     if (activeTab === 'User Management') return <ViewModule title="Registry Access" icon={<ShieldCheck size={48} />} />;
 
@@ -234,37 +234,40 @@ export default function Dashboard() {
                   </button>
                 </div>
 
-                {/* Enhanced Primary Target Visibility */}
-                <div className="analysis-mesh p-8 pb-12 rounded-[2.5rem] relative shadow-2xl overflow-hidden border border-white/20">
-                  <div className="relative z-10 text-white space-y-10">
-                    <div>
-                      <div className="flex items-center gap-2 mb-6">
-                        <span className="text-[10px] font-black uppercase tracking-[0.3em] bg-white/20 backdrop-blur-md px-3 py-1.5 rounded-full ring-1 ring-white/30">Primary Target</span>
-                        <div className="h-px flex-1 bg-white/20" />
-                      </div>
-                      <h4 className="font-black text-3xl tracking-tighter leading-tight drop-shadow-lg italic">
-                        {selectedComplaint.subject}
-                      </h4>
-                      <div className="mt-4 flex items-center gap-2 font-mono text-[10px] opacity-70 uppercase tracking-widest">
-                        <Database size={10} /> {selectedComplaint.id}
-                      </div>
-                    </div>
-
-                    <div className="p-7 rounded-[2rem] bg-slate-950/20 backdrop-blur-lg border border-white/10 shadow-inner">
-                      <p className="text-lg leading-snug font-extrabold italic tracking-tight text-white/90">
-                        "{selectedComplaint.description}"
-                      </p>
-                    </div>
+                {/* Redesigned Primary Target for 100% Visibility of Subject */}
+                <div className="space-y-6">
+                  <div className="flex items-center gap-3">
+                    <span className="text-[10px] font-black uppercase tracking-[0.4em] text-accent">Primary Target</span>
+                    <div className="h-px flex-1 bg-slate-100" />
                   </div>
-                  {/* Mesh Accent */}
-                  <div className="absolute -bottom-4 -left-10 w-48 h-48 bg-white/10 blur-[60px] rounded-full" />
+
+                  <div className="bg-slate-900 rounded-[2.5rem] p-8 shadow-2xl relative overflow-hidden group">
+                    <div className="relative z-10 space-y-6">
+                      <h4 className="text-white font-black text-3xl tracking-tight leading-tight italic drop-shadow-sm">
+                        "{selectedComplaint.subject}"
+                      </h4>
+                      <div className="flex items-center gap-3 text-[10px] text-white/50 font-mono tracking-widest uppercase">
+                        <div className="h-4 w-[2px] bg-accent rounded-full" />
+                        Grievance ID: {selectedComplaint.id}
+                      </div>
+                    </div>
+                    {/* Mesh Accent for Aesthetic */}
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-accent/20 blur-[80px] rounded-full translate-x-1/3 -translate-y-1/3 transition-all group-hover:scale-125 duration-700" />
+                  </div>
+
+                  <div className="p-8 rounded-[2rem] bg-white border-2 border-slate-50 shadow-xl">
+                    <div className="text-[10px] font-black text-slate-300 uppercase tracking-widest mb-3">Citizen Statement</div>
+                    <p className="text-base leading-relaxed font-extrabold italic tracking-tight text-slate-800">
+                      "{selectedComplaint.description}"
+                    </p>
+                  </div>
                 </div>
 
                 <div className="space-y-8 animate-in">
                   <div className="space-y-4">
                     <div className="flex items-center justify-between px-2">
                       <div className="flex items-center gap-2">
-                        <div className="p-2 rounded-xl bg-indigo-600 text-white"><Sparkles size={18} /></div>
+                        <div className="p-2 rounded-xl bg-indigo-600 text-white shadow-lg shadow-indigo-200"><Sparkles size={18} /></div>
                         <h4 className="text-sm font-black uppercase tracking-widest text-slate-800">AI Context Engine</h4>
                       </div>
                       <span className="text-[11px] font-black text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-100 italic">94% Confidence</span>
@@ -281,7 +284,7 @@ export default function Dashboard() {
 
                     <div className="p-8 rounded-[2rem] bg-slate-50 border border-slate-200/50 shadow-inner">
                       <div className="text-[11px] font-black text-slate-400 uppercase mb-4 tracking-widest flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 rounded-full bg-accent" /> Pattern Match Insight
+                        <div className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" /> Pattern Match Insight
                       </div>
                       <p className="text-sm text-slate-800 font-bold leading-relaxed">
                         {selectedComplaint.aiAnalysis.rootCause}. Priority field inspection recommended.
@@ -289,7 +292,7 @@ export default function Dashboard() {
                     </div>
                   </div>
 
-                  {/* New Official Notes Section */}
+                  {/* Official Remarks / Note Adding Area */}
                   <div className="space-y-4">
                     <div className="flex items-center justify-between px-2">
                       <div className="flex items-center gap-2">
@@ -300,20 +303,20 @@ export default function Dashboard() {
                     </div>
                     <div className="relative group">
                       <textarea
-                        placeholder="Append technical nodes or final resolution notes here..."
+                        placeholder="Enter remediation details or technical notes..."
                         value={officerNote}
                         onChange={(e) => setOfficerNote(e.target.value)}
-                        className="w-full bg-slate-50 border-2 border-slate-100 rounded-[2rem] p-6 text-sm font-bold text-slate-800 placeholder:text-slate-300 focus:outline-none focus:border-accent/40 focus:ring-4 focus:ring-accent/5 transition-all min-h-[140px] resize-none shadow-inner"
+                        className="w-full bg-slate-50 border-2 border-slate-100 rounded-[2rem] p-7 text-sm font-bold text-slate-800 placeholder:text-slate-300 focus:outline-none focus:border-accent/40 focus:ring-[6px] focus:ring-accent/5 transition-all min-h-[160px] resize-none shadow-inner"
                       />
-                      <div className="absolute bottom-4 right-6 flex items-center gap-2 opacity-50">
+                      <div className="absolute bottom-6 right-8 flex items-center gap-2 opacity-40">
                         <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Logged: A. Sharma</span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="space-y-5 pt-2">
+                  <div className="space-y-6 pt-2 pb-10">
                     <div className="flex items-center justify-between px-2">
-                      <h4 className="text-sm font-black uppercase tracking-widest text-slate-800">Officer Action</h4>
+                      <h4 className="text-sm font-black uppercase tracking-widest text-slate-800">Final Action</h4>
                       <div className="h-px flex-1 mx-6 bg-slate-100" />
                     </div>
                     <div className="flex gap-4">
@@ -340,8 +343,8 @@ export default function Dashboard() {
                       />
                     </div>
 
-                    <div className="space-y-6 pt-2">
-                      <button className="w-full bg-slate-900 text-white font-black uppercase text-xs tracking-widest py-5 rounded-[1.5rem] shadow-xl hover:bg-black transition-all active:scale-95 flex items-center justify-center gap-3">
+                    <div className="pt-4">
+                      <button className="w-full bg-slate-950 text-white font-black uppercase text-xs tracking-widest py-6 rounded-[1.5rem] shadow-2xl hover:bg-black transition-all active:scale-95 flex items-center justify-center gap-3">
                         Seal & Push to CPGRAMS <Check size={16} />
                       </button>
                     </div>
