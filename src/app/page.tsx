@@ -222,127 +222,76 @@ export default function Dashboard() {
           </div>
 
           {/* Analysis Sidebar */}
-          <div className="w-[480px] bg-white border-l border-slate-200 overflow-y-auto p-10 flex flex-col gap-10 z-20 shadow-2xl relative">
+          <div className="w-[480px] bg-white border-l border-slate-200 overflow-y-auto p-10 flex flex-col gap-12 z-20 shadow-2xl relative">
             {selectedComplaint ? (
               <>
                 <div className="flex items-center justify-between">
                   <div className="flex flex-col">
-                    <h3 className="font-black text-2xl text-slate-900 tracking-tighter leading-none">Analysis</h3>
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.3em] mt-1">Intelligence Module</span>
+                    <h3 className="font-black text-2xl text-slate-900 tracking-tighter leading-none uppercase italic">Analysis</h3>
                   </div>
-                  <button onClick={() => setSelectedId(null)} className="h-10 w-10 rounded-2xl hover:bg-slate-100 flex items-center justify-center group">
+                  <button onClick={() => setSelectedId(null)} className="h-10 w-10 rounded-2xl hover:bg-slate-100 flex items-center justify-center group transition-colors">
                     <X size={24} className="text-slate-300 group-hover:text-slate-900" />
                   </button>
                 </div>
 
-                {/* Guaranteed 100% Visibility for Primary Target Subject */}
-                <div className="space-y-6">
-                  <div className="flex items-center gap-3">
-                    <span className="text-[10px] font-black uppercase tracking-[0.5em] text-accent flex items-center gap-2">
-                      <Target size={12} /> Primary Target
-                    </span>
-                    <div className="h-px flex-1 bg-slate-100" />
-                  </div>
-
-                  <div className="bg-[#0f172a] rounded-[2.5rem] p-9 shadow-[0_30px_60px_-15px_rgba(15,23,42,0.3)] relative overflow-hidden border border-slate-800 transition-all hover:shadow-[0_40px_80px_-20px_rgba(15,23,42,0.5)] group">
-                    <div className="relative z-10 space-y-6">
-                      <h4 className="text-white font-black text-3xl tracking-tight leading-tight italic whitespace-normal break-words drop-shadow-2xl">
-                        "{selectedComplaint.subject}"
-                      </h4>
-                      <div className="flex items-center gap-4 text-[10px] text-slate-500 font-mono tracking-widest uppercase">
-                        <div className="px-3 py-1 bg-slate-800 rounded-full border border-slate-700 font-bold">ID: {selectedComplaint.id}</div>
-                        <span className="opacity-40 italic font-bold">System Captured</span>
-                      </div>
+                <div className="space-y-12 animate-in pb-20">
+                  {/* Citizen Statement - Raw Input Priority */}
+                  <div className="p-10 rounded-[2.5rem] bg-slate-50/80 border-2 border-slate-100 shadow-sm relative overflow-hidden group">
+                    <div className="text-[11px] font-black text-slate-400 uppercase tracking-[0.3em] mb-6 flex items-center gap-3">
+                      <div className="h-1.5 w-1.5 rounded-full bg-accent" />
+                      Citizen Statement
                     </div>
-                    <div className="absolute top-0 right-0 w-80 h-80 bg-accent/20 blur-[100px] rounded-full translate-x-1/2 -translate-y-1/2" />
-                  </div>
-
-                  <div className="p-8 rounded-[2rem] bg-slate-50/50 border border-slate-100 shadow-inner">
-                    <div className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
-                      <MessageSquareQuote size={12} className="text-slate-300" /> Citizen Statement
-                    </div>
-                    <p className="text-base leading-relaxed font-bold italic tracking-tight text-slate-700">
+                    <p className="text-xl leading-relaxed font-bold italic tracking-tight text-slate-700 relative z-10 drop-shadow-sm">
                       "{selectedComplaint.description}"
                     </p>
-                  </div>
-                </div>
-
-                <div className="space-y-8 animate-in">
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between px-2">
-                      <div className="flex items-center gap-2">
-                        <div className="p-2 rounded-xl bg-indigo-600 text-white shadow-lg shadow-indigo-200"><Sparkles size={18} /></div>
-                        <h4 className="text-sm font-black uppercase tracking-widest text-slate-800 tracking-[0.1em]">AI Context Engine</h4>
-                      </div>
-                      <span className="text-[11px] font-black text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-100 italic">94% Confidence</span>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                      <AnalysisCard
-                        label="Sentiment Mapping"
-                        value={selectedComplaint.aiAnalysis.sentiment}
-                        urgent={selectedComplaint.aiAnalysis.sentiment === 'Urgent'}
-                      />
-                      <AnalysisCard label="Scope" value="Municipal / District" />
-                    </div>
-
-                    <div className="p-8 rounded-[2rem] bg-white border border-slate-200/50 shadow-sm relative overflow-hidden group">
-                      <div className="text-[11px] font-black text-slate-400 uppercase mb-4 tracking-widest flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" /> AI Strategic Insight
-                      </div>
-                      <p className="text-sm text-slate-800 font-bold leading-relaxed relative z-10">
-                        {selectedComplaint.aiAnalysis.rootCause}. Actionable remediation detected.
-                      </p>
-                      <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-                        <Zap size={40} />
-                      </div>
-                    </div>
+                    <MessageSquareQuote size={64} className="absolute -bottom-4 -right-4 text-slate-900/5 rotate-12" />
                   </div>
 
-                  {/* Refined Official Remarks Section */}
-                  <div className="space-y-4">
+                  {/* Official Action Notes */}
+                  <div className="space-y-5">
                     <div className="flex items-center justify-between px-2">
-                      <div className="flex items-center gap-2">
-                        <h4 className="text-sm font-black uppercase tracking-widest text-slate-800">Official Action Notes</h4>
-                        <PencilLine size={14} className="text-slate-400" />
+                      <div className="flex items-center gap-3">
+                        <h4 className="text-xs font-black uppercase tracking-[0.2em] text-slate-800">Official Action Notes</h4>
+                        <div className="p-1.5 rounded-lg bg-slate-100 text-slate-400"><PencilLine size={12} /></div>
                       </div>
-                      <div className="h-px flex-1 ml-4 bg-slate-100" />
+                      <div className="h-px flex-1 ml-6 bg-slate-100" />
                     </div>
                     <div className="relative group">
                       <textarea
                         placeholder="Enter technical observations or remediation logs..."
                         value={officerNote}
                         onChange={(e) => setOfficerNote(e.target.value)}
-                        className="w-full bg-white border-2 border-slate-100 rounded-[2.5rem] p-8 text-sm font-bold text-slate-800 placeholder:text-slate-300 focus:outline-none focus:border-accent focus:ring-[8px] focus:ring-accent/5 transition-all min-h-[160px] resize-none shadow-sm"
+                        className="w-full bg-white border-2 border-slate-100 rounded-[2.5rem] p-8 text-sm font-bold text-slate-800 placeholder:text-slate-300 focus:outline-none focus:border-accent focus:ring-[10px] focus:ring-accent/5 transition-all min-h-[180px] resize-none shadow-sm"
                       />
                       <div className="absolute bottom-6 right-8 flex items-center gap-2 opacity-30 select-none">
-                        <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest italic">Encrypted Log: A. Sharma</span>
+                        <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest italic tracking-[0.1em]">Authenticated Log: Abhishek Sharma</span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="space-y-6 pt-2 pb-16">
+                  {/* Decision Matrix */}
+                  <div className="space-y-6">
                     <div className="flex items-center justify-between px-2">
-                      <h4 className="text-sm font-black uppercase tracking-widest text-slate-800">Status Update</h4>
+                      <h4 className="text-xs font-black uppercase tracking-[0.2em] text-slate-800">Status Update</h4>
                       <div className="h-px flex-1 mx-6 bg-slate-100" />
                     </div>
-                    <div className="flex gap-4">
+                    <div className="flex gap-5">
                       <ActionBtn
-                        icon={<CheckCircle2 size={24} />}
+                        icon={<CheckCircle2 size={26} />}
                         label="Accept"
                         active={selectedComplaint.status === 'Resolved'}
                         color="text-emerald-500 hover:bg-emerald-50 border-emerald-200 active:bg-emerald-500"
                         onClick={() => handleAction(selectedComplaint.id, 'Resolved')}
                       />
                       <ActionBtn
-                        icon={<Edit2 size={24} />}
+                        icon={<Edit2 size={26} />}
                         label="Modify"
                         active={selectedComplaint.status === 'Processing'}
                         color="text-amber-500 hover:bg-amber-50 border-amber-200 active:bg-amber-500"
                         onClick={() => handleAction(selectedComplaint.id, 'Processing')}
                       />
                       <ActionBtn
-                        icon={<XCircle size={24} />}
+                        icon={<XCircle size={26} />}
                         label="Escalate"
                         active={selectedComplaint.status === 'Escalated'}
                         color="text-rose-500 hover:bg-rose-50 border-rose-200 active:bg-rose-500"
@@ -350,9 +299,9 @@ export default function Dashboard() {
                       />
                     </div>
 
-                    <div className="pt-4">
-                      <button className="w-full bg-[#0f172a] text-white font-black uppercase text-[11px] tracking-[0.2em] py-6 rounded-[2rem] shadow-[0_20px_40px_-10px_rgba(15,23,42,0.4)] hover:bg-black transition-all active:scale-95 flex items-center justify-center gap-3">
-                        Seal & Synchronize <Check size={18} />
+                    <div className="pt-6">
+                      <button className="w-full bg-[#0f172a] text-white font-black uppercase text-[12px] tracking-[0.3em] py-7 rounded-[2rem] shadow-[0_25px_50px_-12px_rgba(15,23,42,0.4)] hover:bg-black transition-all active:scale-95 flex items-center justify-center gap-4">
+                        Seal & Synchronize <Check size={20} />
                       </button>
                     </div>
                   </div>
