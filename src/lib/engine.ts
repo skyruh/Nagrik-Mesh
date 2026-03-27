@@ -82,15 +82,16 @@ export function enrichComplaint(complaint: Partial<ExtendedComplaint>, existingC
 
     return {
         ...complaint,
-        id: complaint.id || `CPG-${Date.now()}`,
+        id: complaint.id || `CPG-DUMMY`,
         status: complaint.status || 'Pending',
         priority: level,
         priorityScore: score,
         aiAnalysis: analysis,
         suggestedSolution: solution,
         historicalSolutionApplied: fromHistory,
+        lastAction: complaint.lastAction || 'No primary action logged',
         suspicionFlags: flags,
-        timestamp: complaint.timestamp || new Date().toISOString(),
+        timestamp: complaint.timestamp || '2023-10-21T10:00:00Z',
     } as ExtendedComplaint;
 }
 
