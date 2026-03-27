@@ -244,17 +244,17 @@ export default function Dashboard() {
                     <div className="h-px flex-1 bg-slate-100" />
                   </div>
 
-                  <div className="bg-[#0f172a] rounded-[2.5rem] p-9 shadow-[0_30px_60px_-15px_rgba(15,23,42,0.3)] relative overflow-hidden border border-slate-800">
+                  <div className="bg-[#0f172a] rounded-[2.5rem] p-9 shadow-[0_30px_60px_-15px_rgba(15,23,42,0.3)] relative overflow-hidden border border-slate-800 transition-all hover:shadow-[0_40px_80px_-20px_rgba(15,23,42,0.5)] group">
                     <div className="relative z-10 space-y-6">
-                      <h4 className="text-white font-black text-3xl tracking-tight leading-snug italic whitespace-normal break-words">
+                      <h4 className="text-white font-black text-3xl tracking-tight leading-tight italic whitespace-normal break-words drop-shadow-2xl">
                         "{selectedComplaint.subject}"
                       </h4>
                       <div className="flex items-center gap-4 text-[10px] text-slate-500 font-mono tracking-widest uppercase">
-                        <div className="px-3 py-1 bg-slate-800 rounded-full border border-slate-700">ID: {selectedComplaint.id}</div>
-                        <span className="opacity-40 italic">System Captured</span>
+                        <div className="px-3 py-1 bg-slate-800 rounded-full border border-slate-700 font-bold">ID: {selectedComplaint.id}</div>
+                        <span className="opacity-40 italic font-bold">System Captured</span>
                       </div>
                     </div>
-                    <div className="absolute top-0 right-0 w-80 h-80 bg-accent/15 blur-[100px] rounded-full translate-x-1/2 -translate-y-1/2" />
+                    <div className="absolute top-0 right-0 w-80 h-80 bg-accent/20 blur-[100px] rounded-full translate-x-1/2 -translate-y-1/2" />
                   </div>
 
                   <div className="p-8 rounded-[2rem] bg-slate-50/50 border border-slate-100 shadow-inner">
