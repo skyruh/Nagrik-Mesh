@@ -119,7 +119,7 @@ export default function Dashboard() {
   };
 
   const renderContent = () => {
-    if (activeTab === 'Dashboard') return <ViewModule title="System Intelligence" icon={<Zap size={48} />} />;
+    if (activeTab === 'Dashboard') return <DashboardView complaints={complaints} processedIds={processedIds} onSelect={(id: string) => { setSelectedId(id); setActiveTab('Active Feed'); }} />;
     if (activeTab === 'Analytics') return <AnalyticsView complaints={complaints} processedIds={processedIds} />;
     if (activeTab === 'User Management') return <UserManagementView />;
 
@@ -143,6 +143,8 @@ export default function Dashboard() {
         forwardTo={forwardTo}
         setForwardTo={setForwardTo}
         handleAction={handleAction}
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
       />
     );
   };
@@ -182,7 +184,7 @@ export default function Dashboard() {
           <div className="flex items-center gap-4">
             <div className="h-6 w-1.5 bg-accent rounded-full shadow-[0_0_12px_rgba(59,130,246,0.6)]" />
             <h2 className="text-slate-900 font-black text-xl tracking-tight uppercase italic">
-              {activeTab} <span className="text-slate-300 font-bold text-sm ml-3 tracking-widest normal-case not-italic">/ Operations Core</span>
+              {activeTab}
             </h2>
           </div>
 
@@ -210,30 +212,28 @@ export default function Dashboard() {
 }
 
 function FeedModule({
-  activeTab, deptFilter, setDeptFilter, statusFilter, setStatusFilter, priorityFilter, setPriorityFilter, stats, filteredComplaints, isArchiveMode, selectedId, setSelectedId, selectedComplaint, officerNote, setOfficerNote, forwardTo, setForwardTo, handleAction
+  activeTab, deptFilter, setDeptFilter, statusFilter, setStatusFilter, priorityFilter, setPriorityFilter, stats, filteredComplaints, isArchiveMode, selectedId, setSelectedId, selectedComplaint, officerNote, setOfficerNote, forwardTo, setForwardTo, handleAction, searchQuery, setSearchQuery
 }: any) {
   return (
     <>
       {/* Filters Strip */}
       <div className="px-10 py-5 flex items-center justify-between bg-white border-b border-slate-200 shadow-sm z-[100] relative">
         <div className="flex items-center gap-6">
+          <div className="relative group">
+            <Search size={14} className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-accent transition-colors" />
+            <input
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search Citizen or ID..."
+              className="bg-slate-50 border-2 border-slate-100 rounded-[1.2rem] pl-12 pr-8 py-3 text-[10px] font-black uppercase placeholder:text-slate-300 focus:outline-none focus:border-accent focus:bg-white transition-all w-64"
+            />
+          </div>
           <FilterSelector label="View Sector" value={deptFilter} options={['All', 'MoHFW', 'MoE', 'MoRD']} onChange={setDeptFilter} />
           <FilterSelector label="Status" value={statusFilter} options={['All', 'Pending', 'Processing', 'Escalated', 'Resolved']} onChange={setStatusFilter} />
           <FilterSelector label="Priority" value={priorityFilter} options={['All', 'Critical', 'High', 'Moderate', 'Low']} onChange={setPriorityFilter} />
         </div>
 
         <div className="flex items-center gap-8">
-          <div className="flex flex-col gap-2 w-48">
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest flex items-center gap-1.5">
-                <Activity size={10} /> Fleet Utilization
-              </span>
-              <span className="text-[10px] font-black text-slate-800">{stats.percentage}%</span>
-            </div>
-            <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
-              <div className="h-full bg-blue-500 transition-all duration-1000 ease-out" style={{ width: `${stats.percentage}%` }} />
-            </div>
-          </div>
         </div>
       </div>
 
@@ -431,11 +431,10 @@ function AnalyticsView({ complaints, processedIds }: any) {
 
   return (
     <div className="flex-1 overflow-y-auto bg-[#f8fafc] p-10 space-y-10 animate-in fade-in slide-in-from-bottom-5 duration-700">
-      <div className="grid grid-cols-4 gap-8">
+      <div className="grid grid-cols-3 gap-8">
         <KPICard title="Total Payload" value={complaints.length} trend="+12.5%" icon={<Database size={20} />} color="text-slate-900" />
         <KPICard title="Processed" value={processedIds.size} trend={`+${processedIds.size}`} icon={<ShieldCheck size={20} />} color="text-blue-600" />
         <KPICard title="Escalation Rate" value={`${Math.round((complaints.filter((c: any) => c.status === 'Escalated').length / (complaints.length || 1)) * 100)}%`} trend="-2%" icon={<AlertCircle size={20} />} color="text-rose-600" down />
-        <KPICard title="Mean Sync Time" value="14.2m" trend="Stable" icon={<Clock size={20} />} color="text-emerald-600" />
       </div>
       <div className="grid grid-cols-12 gap-8 h-[500px]">
         <div className="col-span-8 bg-white rounded-[3rem] p-10 shadow-xl border border-slate-100 flex flex-col gap-8 relative overflow-hidden group">
@@ -482,8 +481,8 @@ function AnalyticsView({ complaints, processedIds }: any) {
           </div>
         </div>
       </div>
-      <div className="grid grid-cols-2 gap-8 h-[400px] pb-10">
-        <div className="bg-white rounded-[3rem] p-10 shadow-xl border border-slate-100 flex flex-col gap-8">
+      <div className="h-[400px] pb-10">
+        <div className="bg-white rounded-[3rem] p-10 shadow-xl border border-slate-100 flex flex-col gap-8 h-full">
           <h3 className="text-sm font-black uppercase tracking-widest text-slate-400">Cross-Ministerial Audit</h3>
           <p className="text-2xl font-black text-slate-900 tracking-tighter italic uppercase">Departmental Latency</p>
           <div className="flex-1 w-full min-h-0">
@@ -493,20 +492,20 @@ function AnalyticsView({ complaints, processedIds }: any) {
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                   <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 900, fill: '#94a3b8' }} />
                   <Tooltip />
-                  <Bar dataKey="Resolved" fill="#10b981" radius={[10, 10, 0, 0]} barSize={24} />
-                  <Bar dataKey="Volume" fill="#e2e8f0" radius={[10, 10, 0, 0]} barSize={24} />
+                  <Bar dataKey="Resolved" fill="#10b981" radius={[10, 10, 0, 0]} barSize={32} />
+                  <Bar dataKey="Volume" fill="#e2e8f0" radius={[10, 10, 0, 0]} barSize={32} />
                 </BarChart>
               </ResponsiveContainer>
             )}
           </div>
         </div>
-        <div className="bg-[#0f172a] rounded-[3.5rem] p-12 shadow-2xl relative overflow-hidden group"><div className="absolute top-0 right-0 p-12"><div className="h-20 w-20 rounded-full bg-white/5 border border-white/10 flex items-center justify-center backdrop-blur-3xl group-hover:scale-110 transition-transform"><TrendingUp size={32} className="text-blue-400" /></div></div><div className="h-full flex flex-col justify-between relative z-10"><div className="space-y-4"><span className="text-[10px] font-black text-blue-400 uppercase tracking-[0.4em]">Intelligence Summary</span><h3 className="text-3xl font-black text-white italic tracking-tighter leading-tight uppercase">Operational <br /> Health Index: <span className="text-emerald-400">Optimum</span></h3></div><div className="space-y-6"><div className="h-px w-full bg-white/10" /><p className="text-slate-400 text-sm font-bold leading-relaxed max-w-sm">Systemic synchronization remains at 99.8%. No critical bottlenecks detected in district forwarding protocols for the last 24H window.</p><button className="flex items-center gap-3 text-white text-[10px] font-black uppercase tracking-widest hover:gap-6 transition-all group/btn">Generate Full Audit <ArrowUpRight size={14} className="text-blue-400" /></button></div></div><div className="absolute -bottom-20 -left-20 w-80 h-80 bg-blue-500/10 rounded-full blur-[100px]" /></div>
       </div>
     </div>
   )
 }
 
 function UserManagementView() {
+  const [query, setQuery] = useState('');
   const users = [
     { id: 'OFC-902', name: 'Abhishek Sharma', rank: 'Joint Secretary', dept: 'MoRD Core', role: 'Super Admin', status: 'Active' },
     { id: 'OFC-881', name: 'Priya Verma', rank: 'Technical Lead', dept: 'MoRD Technical', role: 'Operator', status: 'Active' },
@@ -514,6 +513,8 @@ function UserManagementView() {
     { id: 'OFC-612', name: 'Anjali Gupta', rank: 'Audit Officer', dept: 'MoHFW Central', role: 'Auditor', status: 'Active' },
     { id: 'OFC-412', name: 'Vikram Malhotra', rank: 'Deputy Director', dept: 'MoE Planning', role: 'Operator', status: 'Inactive' },
   ];
+
+  const filtered = useMemo(() => users.filter(u => u.name.toLowerCase().includes(query.toLowerCase()) || u.id.toLowerCase().includes(query.toLowerCase())), [query, users]);
 
   return (
     <div className="flex-1 flex flex-col bg-[#f8fafc] overflow-hidden animate-in fade-in slide-in-from-right-4 duration-500">
@@ -524,7 +525,12 @@ function UserManagementView() {
           <div className="h-10 w-px bg-slate-100" />
           <div className="relative group">
             <Search size={14} className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-accent transition-colors" />
-            <input placeholder="Search Personnel ID or Name..." className="bg-slate-50 border-2 border-slate-100 rounded-2xl pl-12 pr-8 py-3 text-[10px] font-black uppercase placeholder:text-slate-300 focus:outline-none focus:border-accent focus:bg-white transition-all w-80" />
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search Personnel ID or Name..."
+              className="bg-slate-50 border-2 border-slate-100 rounded-2xl pl-12 pr-8 py-3 text-[10px] font-black uppercase placeholder:text-slate-300 focus:outline-none focus:border-accent focus:bg-white transition-all w-80"
+            />
           </div>
         </div>
         <div className="flex items-center gap-4">
@@ -558,7 +564,7 @@ function UserManagementView() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-50">
-                {users.map(u => (
+                {filtered.map(u => (
                   <tr key={u.id} className="hover:bg-slate-50 transition-all group cursor-pointer">
                     <td className="px-10 py-6 text-blue-600 font-black font-sans">{u.id}</td>
                     <td className="px-6 py-6"><div className="flex flex-col"><span className="text-slate-900 text-sm font-black tracking-tight">{u.name}</span><span className="text-[9px] uppercase tracking-widest text-slate-400 not-italic">{u.rank}</span></div></td>
@@ -716,6 +722,87 @@ function ActionBtn({ icon, label, color, onClick, active }: { icon: React.ReactN
     <button onClick={onClick} className={cn("flex-1 flex flex-col items-center justify-center gap-4 py-8 rounded-[2.8rem] border-2 font-black text-[11px] uppercase tracking-[0.2em] transition-all active:scale-90 shadow-lg", active ? "ring-[10px] ring-offset-2 ring-accent/10 border-accent bg-accent/5" : "hover:scale-105 border-slate-50 bg-white", color)}>
       <div className="transition-transform duration-500 group-hover:rotate-12">{icon}</div>{label}
     </button>
+  )
+}
+
+function DashboardView({ complaints, processedIds, onSelect }: any) {
+  const [isMounted, setIsMounted] = useState(false);
+  useEffect(() => { setIsMounted(true); }, []);
+
+  const criticalHigh = useMemo(() => complaints.filter((c: any) => (c.priority === 'Critical' || c.priority === 'High') && !processedIds.has(c.id)).slice(0, 5), [complaints, processedIds]);
+
+  const areaData = [
+    { day: 'Mon', value: 12 }, { day: 'Tue', value: 19 }, { day: 'Wed', value: 15 },
+    { day: 'Thu', value: 22 }, { day: 'Fri', value: 30 }, { day: 'Sat', value: 25 }, { day: 'Sun', value: processedIds.size + 20 }
+  ];
+
+  return (
+    <div className="flex-1 overflow-y-auto bg-[#f8fafc] p-10 space-y-10 animate-in fade-in zoom-in duration-500">
+      {/* Top Level KPIs */}
+      <div className="grid grid-cols-3 gap-8">
+        <KPICard title="Operational Payload" value={complaints.length} trend="+12%" icon={<Database size={20} />} color="text-slate-900" />
+        <KPICard title="High Alert Signal" value={complaints.filter((c: any) => c.priority === 'Critical').length} trend="Active" icon={<ShieldAlert size={20} />} color="text-rose-600" />
+        <KPICard title="Resolution Health" value="98.4%" trend="Stable" icon={<ShieldCheck size={20} />} color="text-emerald-600" />
+      </div>
+
+      <div className="grid grid-cols-12 gap-8">
+        {/* Primary Chart */}
+        <div className="col-span-12 xl:col-span-7 bg-white rounded-[3rem] p-10 shadow-xl border border-slate-100 flex flex-col gap-8 relative overflow-hidden group">
+          <div className="flex items-center justify-between relative z-10">
+            <div><h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Tactical Telemetry</h3><p className="text-2xl font-black text-slate-900 tracking-tighter italic uppercase">Incidence Velocity</p></div>
+            <div className="px-4 py-2 bg-blue-50 text-blue-600 rounded-xl text-[10px] font-black uppercase tracking-widest border border-blue-100">Live Stream</div>
+          </div>
+          <div className="h-[280px] w-full min-h-0">
+            {isMounted && (
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={areaData}>
+                  <defs>
+                    <linearGradient id="colorDash" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.2} />
+                      <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                  <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 900, fill: '#94a3b8' }} dy={10} />
+                  <YAxis hide />
+                  <Tooltip contentStyle={{ borderRadius: '1.5rem', border: 'none', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.15)', fontSize: '10px', fontWeight: 900 }} />
+                  <Area type="monotone" dataKey="value" stroke="#3b82f6" strokeWidth={4} fillOpacity={1} fill="url(#colorDash)" />
+                </AreaChart>
+              </ResponsiveContainer>
+            )}
+          </div>
+        </div>
+
+        {/* Tactical Grievances List */}
+        <div className="col-span-12 xl:col-span-5 flex flex-col gap-8">
+          <div className="flex items-center justify-between"><h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Critical Response Queue</h3><span className="text-[9px] font-black px-3 py-1 bg-rose-50 text-rose-500 rounded-lg uppercase">Immediate Action Required</span></div>
+          <div className="space-y-4">
+            {criticalHigh.map((c: any) => (
+              <div key={c.id} onClick={() => onSelect(c.id)} className="bg-white p-6 rounded-[2rem] shadow-lg border border-slate-100 flex items-center justify-between group hover:border-accent hover:-translate-y-1 transition-all cursor-pointer">
+                <div className="flex items-center gap-6">
+                  <div className={cn("h-12 w-1.5 rounded-full", c.priority === 'Critical' ? "bg-rose-500" : "bg-amber-500")} />
+                  <div>
+                    <h4 className="text-[11px] font-black text-blue-600 uppercase tracking-tighter">{c.id}</h4>
+                    <p className="text-[13px] font-bold text-slate-900 line-clamp-1 max-w-[200px]">{c.subject}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-4">
+                  <div className="text-right flex flex-col">
+                    <span className="text-[9px] font-black text-slate-300 uppercase">{c.status}</span>
+                    <span className="text-[10px] font-bold text-slate-500 uppercase">{c.dateFiled}</span>
+                  </div>
+                  <ChevronRight size={16} className="text-slate-200 group-hover:text-accent transition-colors" />
+                </div>
+              </div>
+            ))}
+            {criticalHigh.length === 0 && (
+              <div className="py-20 text-center bg-white rounded-[2.5rem] border border-dashed border-slate-200"><p className="text-sm font-black text-slate-300 uppercase tracking-[0.3em]">No Critical Threats</p></div>
+            )}
+            <button onClick={() => onSelect(null)} className="w-full py-5 rounded-[1.8rem] bg-slate-900 text-white text-[10px] font-black uppercase tracking-[0.2em] shadow-xl hover:bg-black transition-all flex items-center justify-center gap-3">Enter Operations Feed <ArrowUpRight size={14} /></button>
+          </div>
+        </div>
+      </div>
+    </div>
   )
 }
 
