@@ -18,7 +18,11 @@ import {
   BarChart3,
   FileText,
   Users,
-  Bell
+  Bell,
+  PieChart,
+  History,
+  TrendingUp,
+  ShieldCheck
 } from 'lucide-react';
 import { MOCK_COMPLAINTS } from '../lib/mock-data';
 import { getProcessedComplaints } from '../lib/engine';
@@ -41,7 +45,9 @@ export default function Dashboard() {
     setComplaints(processed);
   }, []);
 
-  // Derived filtered data
+  // Logical View Separation
+  // Dashboard: The "Intelligence Overwatch" - High severity and systemic patterns
+  // My Queue: The "Action Pipeline" - Direct assignments for A. Sharma
   const filteredComplaints = useMemo(() => {
     return complaints.filter(c => {
       const matchesSearch =
@@ -53,10 +59,19 @@ export default function Dashboard() {
       const matchesPriority = priorityFilter === 'All' || c.priority === priorityFilter;
       const matchesDept = deptFilter === 'All' || c.department === deptFilter;
 
-      // Tab specific logic
-      const matchesTab = activeTab === 'My Queue' ? (c.status === 'Pending' || c.status === 'Processing') : true;
+      const standardFilters = matchesSearch && matchesStatus && matchesPriority && matchesDept;
 
-      return matchesSearch && matchesStatus && matchesPriority && matchesDept && matchesTab;
+      if (activeTab === 'Dashboard') {
+        // Dashboard shows only high-stakes items: Critical/High priority OR Escalated status
+        return standardFilters && (c.priority === 'Critical' || c.priority === 'High' || c.status === 'Escalated');
+      }
+
+      if (activeTab === 'My Queue') {
+        // My Queue shows only items assigned to this specific session (mocked as Pending/Processing MoRD items)
+        return standardFilters && (c.status === 'Pending' || c.status === 'Processing') && c.department === 'MoRD';
+      }
+
+      return standardFilters;
     });
   }, [complaints, searchQuery, statusFilter, priorityFilter, deptFilter, activeTab]);
 
@@ -77,70 +92,15 @@ export default function Dashboard() {
     ));
   };
 
-  return (
-    <div className="flex h-screen w-full bg-[#f3f4f6] overflow-hidden antialiased">
-      {/* Sidebar matching high-fidelity design */}
-      <aside className="w-64 bg-[#232f3e] flex flex-col p-0 z-20 shadow-2xl shrink-0">
-        <div className="p-6">
-          <div className="flex items-center gap-3 mb-10">
-            <div className="h-10 w-10 rounded-xl bg-white/10 flex items-center justify-center border border-white/5 shadow-inner">
-              <img
-                src="https://upload.wikimedia.org/wikipedia/commons/5/55/Emblem_of_India.svg"
-                alt="Gov of India"
-                className="h-7 invert opacity-90"
-              />
-            </div>
-            <div>
-              <h1 className="text-white font-black text-sm leading-tight tracking-wider uppercase">Nagrik Mesh</h1>
-              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest opacity-60">Digital India</p>
-            </div>
-          </div>
+  const renderContent = () => {
+    if (activeTab === 'Analytics') return <ViewModule title="Visual Intelligence" icon={<BarChart3 size={48} />} />;
+    if (activeTab === 'Reports') return <ViewModule title="Governance Archive" icon={<FileText size={48} />} />;
+    if (activeTab === 'User Management') return <ViewModule title="Registry Access" icon={<ShieldCheck size={48} />} />;
 
-          <nav className="space-y-1">
-            <SidebarItem label="Dashboard" icon={<LayoutDashboard size={16} />} active={activeTab === 'Dashboard'} onClick={() => setActiveTab('Dashboard')} />
-            <SidebarItem label="My Queue" icon={<Inbox size={16} />} active={activeTab === 'My Queue'} onClick={() => setActiveTab('My Queue')} />
-            <SidebarItem label="All Grievances" icon={<Database size={16} />} active={activeTab === 'All Grievances'} onClick={() => setActiveTab('All Grievances')} />
-            <div className="h-px bg-white/5 my-4" />
-            <SidebarItem label="Analytics" icon={<BarChart3 size={16} />} active={activeTab === 'Analytics'} onClick={() => setActiveTab('Analytics')} />
-            <SidebarItem label="Reports" icon={<FileText size={16} />} active={activeTab === 'Reports'} onClick={() => setActiveTab('Reports')} />
-            <SidebarItem label="User Management" icon={<Users size={16} />} active={activeTab === 'User Management'} onClick={() => setActiveTab('User Management')} />
-          </nav>
-        </div>
-        <div className="mt-auto p-6 space-y-1 border-t border-white/5 bg-black/10">
-          <SidebarItem label="Settings" secondary />
-          <SidebarItem label="Help Center" secondary />
-        </div>
-      </aside>
-
-      <main className="flex-1 flex flex-col overflow-hidden bg-[#f8fafc]">
-        {/* Top Header - Singular and Clean */}
-        <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-10 shrink-0 z-10 transition-all duration-300">
-          <div className="flex items-center gap-4">
-            <div className="h-5 w-1 bg-accent rounded-full" />
-            <h2 className="text-slate-800 font-extrabold text-lg tracking-tight">
-              {activeTab} <span className="text-slate-400 font-medium text-sm ml-2">/ Control Center</span>
-            </h2>
-          </div>
-
-          <div className="flex items-center gap-8">
-            <button className="relative p-2 text-slate-400 hover:text-accent transition-colors">
-              <Bell size={20} />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full border-2 border-white" />
-            </button>
-            <div className="flex items-center gap-4 text-[12px]">
-              <div className="flex flex-col text-right">
-                <span className="text-slate-900 font-black">A. Sharma</span>
-                <span className="text-slate-400 font-bold text-[10px] uppercase">Joint Secretary</span>
-              </div>
-              <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-slate-100 to-slate-300 border border-slate-200 shadow-sm transition-transform hover:scale-105 cursor-pointer flex items-center justify-center font-black text-slate-500">
-                AS
-              </div>
-            </div>
-          </div>
-        </header>
-
-        {/* Filters Strip - Premium Spacing */}
-        <div className="px-10 py-5 flex items-center justify-between bg-white border-b border-slate-100 shadow-sm z-10">
+    return (
+      <>
+        {/* Filters Strip - Z-Index 50 to stay above table */}
+        <div className="px-10 py-5 flex items-center justify-between bg-white border-b border-slate-100 shadow-sm z-50 relative">
           <div className="flex items-center gap-6">
             <FilterSelector
               label="Status"
@@ -163,7 +123,7 @@ export default function Dashboard() {
           </div>
 
           <div className="flex items-center gap-8">
-            <div className="flex flex-col gap-2 w-40">
+            <div className="flex flex-col gap-2 w-48">
               <div className="flex items-center justify-between">
                 <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest flex items-center gap-1.5 animate-pulse">
                   <Check size={10} /> Live Resolution
@@ -178,22 +138,22 @@ export default function Dashboard() {
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
               <input
                 type="text"
-                placeholder="Search IDs, citizens or keyword..."
+                placeholder="Grievance ID tracking..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="bg-slate-50 border border-slate-200 rounded-2xl pl-12 pr-6 py-2.5 text-xs w-64 focus:ring-4 focus:ring-accent/5 focus:border-accent outline-none font-bold text-slate-800 transition-all placeholder:text-slate-300 shadow-inner"
+                className="bg-slate-50 border border-slate-200 rounded-2xl pl-12 pr-6 py-2.5 text-xs w-72 focus:ring-4 focus:ring-accent/5 focus:border-accent outline-none font-bold text-slate-800 transition-all placeholder:text-slate-300 shadow-inner"
               />
             </div>
           </div>
         </div>
 
         <div className="flex-1 flex overflow-hidden">
-          {/* Table Area - Clean White Styling */}
-          <div className="flex-1 overflow-y-auto p-10 bg-slate-50/50">
+          {/* Table Area - Z-index 0 to stay below filters */}
+          <div className="flex-1 overflow-y-auto p-10 bg-slate-50/50 z-0">
             <div className="bg-white rounded-[2rem] shadow-xl border border-slate-200/60 overflow-hidden ring-1 ring-black/5">
               <table className="w-full text-left border-collapse text-[12px]">
                 <thead>
-                  <tr className="bg-slate-50/80 border-b border-slate-100 shadow-sm">
+                  <tr className="bg-slate-50/80 border-b border-slate-100 shadow-sm relative z-0">
                     <th className="px-8 py-5 font-black text-slate-400 uppercase tracking-widest">Grievance ID</th>
                     <th className="px-5 py-5 font-black text-slate-400 uppercase tracking-widest">Date</th>
                     <th className="px-5 py-5 font-black text-slate-400 uppercase tracking-widest">Citizen</th>
@@ -210,7 +170,7 @@ export default function Dashboard() {
                         onClick={() => setSelectedId(c.id)}
                         className={cn(
                           "group cursor-pointer transition-all duration-300 hover:bg-slate-50 relative",
-                          selectedId === c.id ? "bg-accent/5 z-10" : "bg-white"
+                          selectedId === c.id ? "bg-accent/[0.03] z-0" : "bg-white"
                         )}
                       >
                         <td className="px-8 py-6 font-black text-accent flex items-center gap-3">
@@ -258,19 +218,18 @@ export default function Dashboard() {
                 </tbody>
               </table>
 
-              {/* Pagination - Pure Design Placeholder */}
               <div className="bg-slate-50/50 border-t border-slate-100 px-8 py-4 flex items-center justify-between text-[11px] font-black uppercase text-slate-400 tracking-tighter">
                 <div>Displaying {filteredComplaints.length} Records</div>
                 <div className="flex items-center gap-4">
-                  <button className="h-8 w-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center opacity-50"><ChevronLeft size={14} /></button>
-                  <span className="text-slate-800 px-2">Page 1</span>
-                  <button className="h-8 w-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center"><ChevronRight size={14} /></button>
+                  <button className="h-8 w-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center opacity-50 hover:bg-slate-50"><ChevronLeft size={14} /></button>
+                  <span className="text-slate-800 px-2 font-black">Page 1</span>
+                  <button className="h-8 w-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center hover:bg-slate-50"><ChevronRight size={14} /></button>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Analysis Sidebar - High Contrast */}
+          {/* Analysis Sidebar */}
           <div className="w-[480px] bg-white border-l border-slate-200 overflow-y-auto p-10 flex flex-col gap-10 z-20 shadow-[0_-30px_60px_-15px_rgba(0,0,0,0.1)] relative">
             {selectedComplaint ? (
               <>
@@ -419,6 +378,72 @@ export default function Dashboard() {
             )}
           </div>
         </div>
+      </>
+    );
+  };
+
+  return (
+    <div className="flex h-screen w-full bg-[#f3f4f6] overflow-hidden antialiased">
+      {/* Sidebar */}
+      <aside className="w-64 bg-[#232f3e] flex flex-col p-0 z-[1000] shadow-2xl shrink-0">
+        <div className="p-6">
+          <div className="flex items-center gap-3 mb-10">
+            <div className="h-10 w-10 rounded-xl bg-white/10 flex items-center justify-center border border-white/5 shadow-inner">
+              <img
+                src="https://upload.wikimedia.org/wikipedia/commons/5/55/Emblem_of_India.svg"
+                alt="Gov of India"
+                className="h-7 invert opacity-90"
+              />
+            </div>
+            <div>
+              <h1 className="text-white font-black text-sm leading-tight tracking-wider uppercase">Nagrik Mesh</h1>
+              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest opacity-60">Digital India</p>
+            </div>
+          </div>
+
+          <nav className="space-y-1">
+            <SidebarItem label="Dashboard" icon={<LayoutDashboard size={16} />} active={activeTab === 'Dashboard'} onClick={() => setActiveTab('Dashboard')} />
+            <SidebarItem label="My Queue" icon={<Inbox size={16} />} active={activeTab === 'My Queue'} onClick={() => setActiveTab('My Queue')} />
+            <div className="h-px bg-white/5 my-4" />
+            <SidebarItem label="Analytics" icon={<BarChart3 size={16} />} active={activeTab === 'Analytics'} onClick={() => setActiveTab('Analytics')} />
+            <SidebarItem label="Reports" icon={<FileText size={16} />} active={activeTab === 'Reports'} onClick={() => setActiveTab('Reports')} />
+            <SidebarItem label="User Management" icon={<Users size={16} />} active={activeTab === 'User Management'} onClick={() => setActiveTab('User Management')} />
+          </nav>
+        </div>
+        <div className="mt-auto p-6 space-y-1 border-t border-white/5 bg-black/10">
+          <SidebarItem label="Settings" secondary />
+          <SidebarItem label="Help Center" secondary />
+        </div>
+      </aside>
+
+      <main className="flex-1 flex flex-col overflow-hidden bg-[#f8fafc] z-0">
+        {/* Top Header */}
+        <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-10 shrink-0 z-50 transition-all duration-300 shadow-sm relative">
+          <div className="flex items-center gap-4">
+            <div className="h-5 w-1 bg-accent rounded-full" />
+            <h2 className="text-slate-800 font-extrabold text-lg tracking-tight">
+              {activeTab} <span className="text-slate-400 font-medium text-sm ml-2">/ Intelligence Controller</span>
+            </h2>
+          </div>
+
+          <div className="flex items-center gap-8">
+            <button className="relative p-2 text-slate-400 hover:text-accent transition-colors">
+              <Bell size={20} />
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full border-2 border-white" />
+            </button>
+            <div className="flex items-center gap-4 text-[12px]">
+              <div className="flex flex-col text-right">
+                <span className="text-slate-900 font-black">A. Sharma</span>
+                <span className="text-slate-400 font-bold text-[10px] uppercase">Joint Secretary</span>
+              </div>
+              <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-slate-100 to-slate-300 border border-slate-200 shadow-sm transition-transform hover:scale-105 cursor-pointer flex items-center justify-center font-black text-slate-500">
+                AS
+              </div>
+            </div>
+          </div>
+        </header>
+
+        {renderContent()}
       </main>
     </div>
   );
@@ -433,7 +458,7 @@ function SidebarItem({ label, icon, active, onClick, secondary }: { label: strin
         active
           ? "bg-accent/10 text-white shadow-[inset_0_0_12px_rgba(59,130,246,0.3)] border-accent/20"
           : "text-slate-500 hover:text-white hover:bg-white/5 active:scale-95",
-        secondary && "py-3 text-slate-600 opacity-60"
+        secondary && "py-3 text-slate-600 opacity-60 hover:opacity-100"
       )}
     >
       <span className={cn("transition-colors", active ? "text-accent" : "text-slate-600")}>{icon}</span>
@@ -451,7 +476,8 @@ function FilterSelector({ label, value, options, onChange }: { label: string, va
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
           "flex items-center gap-3 px-5 py-2.5 border-[1.5px] rounded-2xl shadow-sm cursor-pointer transition-all hover:bg-slate-50 select-none",
-          value !== 'All' ? "border-accent/40 bg-accent/5 ring-4 ring-accent/5" : "bg-white border-slate-100"
+          value !== 'All' ? "border-accent/40 bg-accent/5 ring-4 ring-accent/5" : "bg-white border-slate-100",
+          "relative z-10"
         )}
       >
         <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">{label}</span>
@@ -463,8 +489,11 @@ function FilterSelector({ label, value, options, onChange }: { label: string, va
 
       {isOpen && (
         <>
-          <div className="fixed inset-0 z-30" onClick={() => setIsOpen(false)} />
-          <div className="absolute top-full left-0 mt-3 w-48 bg-white border border-slate-200 rounded-[2rem] shadow-2xl py-3 z-40 animate-in overflow-hidden ring-1 ring-black/5">
+          <div className="fixed inset-0 z-[999]" onClick={() => setIsOpen(false)} />
+          <div className="absolute top-full left-0 mt-3 w-56 bg-white border border-slate-200 rounded-[2rem] shadow-[0_30px_90px_-15px_rgba(0,0,0,0.4)] py-4 z-[1000] animate-in overflow-hidden ring-1 ring-black/5">
+            <div className="px-6 pb-2 mb-2 border-b border-slate-50">
+              <span className="text-[9px] font-black text-slate-300 uppercase tracking-[0.3em]">Filter By {label}</span>
+            </div>
             {options.map(opt => (
               <div
                 key={opt}
@@ -473,8 +502,8 @@ function FilterSelector({ label, value, options, onChange }: { label: string, va
                   setIsOpen(false);
                 }}
                 className={cn(
-                  "px-6 py-3 text-[10px] font-black cursor-pointer hover:bg-slate-50 transition-colors uppercase tracking-[0.2em]",
-                  value === opt ? "bg-accent/10 text-accent font-black" : "text-slate-500"
+                  "px-6 py-3.5 text-[10px] font-black cursor-pointer hover:bg-slate-50 transition-colors uppercase tracking-[0.2em]",
+                  value === opt ? "bg-accent/10 text-accent" : "text-slate-500"
                 )}
               >
                 {opt}
@@ -505,12 +534,36 @@ function ActionBtn({ icon, label, color, onClick, active }: { icon: React.ReactN
       onClick={onClick}
       className={cn(
         "flex-1 flex flex-col items-center justify-center gap-3 py-6 rounded-[2.5rem] border-2 font-black text-[11px] uppercase tracking-[0.2em] transition-all active:scale-90 shadow-md",
-        active ? "ring-4 ring-offset-2 ring-accent border-accent" : "hover:shadow-xl hover:-translate-y-1 border-slate-100",
+        active ? "ring-4 ring-offset-2 ring-accent border-accent bg-accent/5" : "hover:shadow-xl hover:-translate-y-1 border-slate-100 bg-white",
         color
       )}
     >
       {icon}
       {label}
     </button>
+  )
+}
+
+function ViewModule({ title, icon }: { title: string, icon: React.ReactNode }) {
+  return (
+    <div className="flex-1 flex flex-col items-center justify-center bg-slate-50/50 p-20 text-center animate-in">
+      <div className="p-16 rounded-[4rem] bg-white shadow-2xl border border-slate-200/60 flex flex-col items-center gap-10 max-w-lg relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-2 bg-accent opacity-20" />
+        <div className="p-8 rounded-[2.5rem] bg-slate-900 text-white shadow-2xl shadow-slate-900/20 transition-transform hover:scale-110">
+          {icon}
+        </div>
+        <div className="space-y-4">
+          <h3 className="text-3xl font-black text-slate-900 tracking-tighter uppercase italic">{title}</h3>
+          <div className="h-1 w-12 bg-accent mx-auto rounded-full" />
+          <p className="text-slate-400 font-bold text-sm leading-relaxed max-w-xs mx-auto">
+            This executive module is currently undergoing security clearance and data synchronization with CPGRAMS core.
+          </p>
+        </div>
+        <div className="flex items-center gap-3 bg-slate-50 px-6 py-3 rounded-full border border-slate-100">
+          <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+          <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Awaiting Linkage</span>
+        </div>
+      </div>
+    </div>
   )
 }
