@@ -26,7 +26,8 @@ import {
   Zap,
   Activity,
   MessageSquareQuote,
-  PencilLine
+  PencilLine,
+  Target
 } from 'lucide-react';
 import { MOCK_COMPLAINTS } from '../lib/mock-data';
 import { getProcessedComplaints } from '../lib/engine';
@@ -234,30 +235,33 @@ export default function Dashboard() {
                   </button>
                 </div>
 
-                {/* Redesigned Primary Target for 100% Visibility of Subject */}
+                {/* Guaranteed 100% Visibility for Primary Target Subject */}
                 <div className="space-y-6">
                   <div className="flex items-center gap-3">
-                    <span className="text-[10px] font-black uppercase tracking-[0.4em] text-accent">Primary Target</span>
+                    <span className="text-[10px] font-black uppercase tracking-[0.5em] text-accent flex items-center gap-2">
+                      <Target size={12} /> Primary Target
+                    </span>
                     <div className="h-px flex-1 bg-slate-100" />
                   </div>
 
-                  <div className="bg-slate-900 rounded-[2.5rem] p-8 shadow-2xl relative overflow-hidden group">
+                  <div className="bg-[#0f172a] rounded-[2.5rem] p-9 shadow-[0_30px_60px_-15px_rgba(15,23,42,0.3)] relative overflow-hidden border border-slate-800">
                     <div className="relative z-10 space-y-6">
-                      <h4 className="text-white font-black text-3xl tracking-tight leading-tight italic drop-shadow-sm">
+                      <h4 className="text-white font-black text-3xl tracking-tight leading-snug italic whitespace-normal break-words">
                         "{selectedComplaint.subject}"
                       </h4>
-                      <div className="flex items-center gap-3 text-[10px] text-white/50 font-mono tracking-widest uppercase">
-                        <div className="h-4 w-[2px] bg-accent rounded-full" />
-                        Grievance ID: {selectedComplaint.id}
+                      <div className="flex items-center gap-4 text-[10px] text-slate-500 font-mono tracking-widest uppercase">
+                        <div className="px-3 py-1 bg-slate-800 rounded-full border border-slate-700">ID: {selectedComplaint.id}</div>
+                        <span className="opacity-40 italic">System Captured</span>
                       </div>
                     </div>
-                    {/* Mesh Accent for Aesthetic */}
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-accent/20 blur-[80px] rounded-full translate-x-1/3 -translate-y-1/3 transition-all group-hover:scale-125 duration-700" />
+                    <div className="absolute top-0 right-0 w-80 h-80 bg-accent/15 blur-[100px] rounded-full translate-x-1/2 -translate-y-1/2" />
                   </div>
 
-                  <div className="p-8 rounded-[2rem] bg-white border-2 border-slate-50 shadow-xl">
-                    <div className="text-[10px] font-black text-slate-300 uppercase tracking-widest mb-3">Citizen Statement</div>
-                    <p className="text-base leading-relaxed font-extrabold italic tracking-tight text-slate-800">
+                  <div className="p-8 rounded-[2rem] bg-slate-50/50 border border-slate-100 shadow-inner">
+                    <div className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
+                      <MessageSquareQuote size={12} className="text-slate-300" /> Citizen Statement
+                    </div>
+                    <p className="text-base leading-relaxed font-bold italic tracking-tight text-slate-700">
                       "{selectedComplaint.description}"
                     </p>
                   </div>
@@ -268,7 +272,7 @@ export default function Dashboard() {
                     <div className="flex items-center justify-between px-2">
                       <div className="flex items-center gap-2">
                         <div className="p-2 rounded-xl bg-indigo-600 text-white shadow-lg shadow-indigo-200"><Sparkles size={18} /></div>
-                        <h4 className="text-sm font-black uppercase tracking-widest text-slate-800">AI Context Engine</h4>
+                        <h4 className="text-sm font-black uppercase tracking-widest text-slate-800 tracking-[0.1em]">AI Context Engine</h4>
                       </div>
                       <span className="text-[11px] font-black text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-100 italic">94% Confidence</span>
                     </div>
@@ -282,41 +286,44 @@ export default function Dashboard() {
                       <AnalysisCard label="Scope" value="Municipal / District" />
                     </div>
 
-                    <div className="p-8 rounded-[2rem] bg-slate-50 border border-slate-200/50 shadow-inner">
+                    <div className="p-8 rounded-[2rem] bg-white border border-slate-200/50 shadow-sm relative overflow-hidden group">
                       <div className="text-[11px] font-black text-slate-400 uppercase mb-4 tracking-widest flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" /> Pattern Match Insight
+                        <div className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" /> AI Strategic Insight
                       </div>
-                      <p className="text-sm text-slate-800 font-bold leading-relaxed">
-                        {selectedComplaint.aiAnalysis.rootCause}. Priority field inspection recommended.
+                      <p className="text-sm text-slate-800 font-bold leading-relaxed relative z-10">
+                        {selectedComplaint.aiAnalysis.rootCause}. Actionable remediation detected.
                       </p>
+                      <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                        <Zap size={40} />
+                      </div>
                     </div>
                   </div>
 
-                  {/* Official Remarks / Note Adding Area */}
+                  {/* Refined Official Remarks Section */}
                   <div className="space-y-4">
                     <div className="flex items-center justify-between px-2">
                       <div className="flex items-center gap-2">
-                        <h4 className="text-sm font-black uppercase tracking-widest text-slate-800">Official Remarks</h4>
+                        <h4 className="text-sm font-black uppercase tracking-widest text-slate-800">Official Action Notes</h4>
                         <PencilLine size={14} className="text-slate-400" />
                       </div>
                       <div className="h-px flex-1 ml-4 bg-slate-100" />
                     </div>
                     <div className="relative group">
                       <textarea
-                        placeholder="Enter remediation details or technical notes..."
+                        placeholder="Enter technical observations or remediation logs..."
                         value={officerNote}
                         onChange={(e) => setOfficerNote(e.target.value)}
-                        className="w-full bg-slate-50 border-2 border-slate-100 rounded-[2rem] p-7 text-sm font-bold text-slate-800 placeholder:text-slate-300 focus:outline-none focus:border-accent/40 focus:ring-[6px] focus:ring-accent/5 transition-all min-h-[160px] resize-none shadow-inner"
+                        className="w-full bg-white border-2 border-slate-100 rounded-[2.5rem] p-8 text-sm font-bold text-slate-800 placeholder:text-slate-300 focus:outline-none focus:border-accent focus:ring-[8px] focus:ring-accent/5 transition-all min-h-[160px] resize-none shadow-sm"
                       />
-                      <div className="absolute bottom-6 right-8 flex items-center gap-2 opacity-40">
-                        <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Logged: A. Sharma</span>
+                      <div className="absolute bottom-6 right-8 flex items-center gap-2 opacity-30 select-none">
+                        <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest italic">Encrypted Log: A. Sharma</span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="space-y-6 pt-2 pb-10">
+                  <div className="space-y-6 pt-2 pb-16">
                     <div className="flex items-center justify-between px-2">
-                      <h4 className="text-sm font-black uppercase tracking-widest text-slate-800">Final Action</h4>
+                      <h4 className="text-sm font-black uppercase tracking-widest text-slate-800">Status Update</h4>
                       <div className="h-px flex-1 mx-6 bg-slate-100" />
                     </div>
                     <div className="flex gap-4">
@@ -324,28 +331,28 @@ export default function Dashboard() {
                         icon={<CheckCircle2 size={24} />}
                         label="Accept"
                         active={selectedComplaint.status === 'Resolved'}
-                        color="text-emerald-500 hover:bg-emerald-50 border-emerald-200 active:bg-emerald-500 active:text-white"
+                        color="text-emerald-500 hover:bg-emerald-50 border-emerald-200 active:bg-emerald-500"
                         onClick={() => handleAction(selectedComplaint.id, 'Resolved')}
                       />
                       <ActionBtn
                         icon={<Edit2 size={24} />}
                         label="Modify"
                         active={selectedComplaint.status === 'Processing'}
-                        color="text-amber-500 hover:bg-amber-50 border-amber-200 active:bg-amber-500 active:text-white"
+                        color="text-amber-500 hover:bg-amber-50 border-amber-200 active:bg-amber-500"
                         onClick={() => handleAction(selectedComplaint.id, 'Processing')}
                       />
                       <ActionBtn
                         icon={<XCircle size={24} />}
                         label="Escalate"
                         active={selectedComplaint.status === 'Escalated'}
-                        color="text-rose-500 hover:bg-rose-50 border-rose-200 active:bg-rose-500 active:text-white"
+                        color="text-rose-500 hover:bg-rose-50 border-rose-200 active:bg-rose-500"
                         onClick={() => handleAction(selectedComplaint.id, 'Escalated')}
                       />
                     </div>
 
                     <div className="pt-4">
-                      <button className="w-full bg-slate-950 text-white font-black uppercase text-xs tracking-widest py-6 rounded-[1.5rem] shadow-2xl hover:bg-black transition-all active:scale-95 flex items-center justify-center gap-3">
-                        Seal & Push to CPGRAMS <Check size={16} />
+                      <button className="w-full bg-[#0f172a] text-white font-black uppercase text-[11px] tracking-[0.2em] py-6 rounded-[2rem] shadow-[0_20px_40px_-10px_rgba(15,23,42,0.4)] hover:bg-black transition-all active:scale-95 flex items-center justify-center gap-3">
+                        Seal & Synchronize <Check size={18} />
                       </button>
                     </div>
                   </div>
@@ -367,7 +374,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="flex h-screen w-full bg-[#f3f4f6] overflow-hidden antialiased font-sans">
+    <div className="flex h-screen w-full bg-[#f3f4f6] overflow-hidden antialiased font-sans select-none">
       {/* Sidebar */}
       <aside className="w-64 bg-[#232f3e] flex flex-col p-0 z-[1000] shadow-2xl shrink-0">
         <div className="p-6">
@@ -401,25 +408,25 @@ export default function Dashboard() {
       </aside>
 
       <main className="flex-1 flex flex-col overflow-hidden bg-[#f8fafc] z-0 relative">
-        <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-10 shrink-0 z-[110] relative shadow-sm">
+        <header className="h-20 bg-white border-b border-slate-200 flex items-center justify-between px-10 shrink-0 z-[110] relative shadow-sm">
           <div className="flex items-center gap-4">
-            <div className="h-5 w-1 bg-accent rounded-full shadow-[0_0_8px_rgba(59,130,246,0.5)]" />
-            <h2 className="text-slate-800 font-extrabold text-lg tracking-tight">
-              {activeTab} <span className="text-slate-400 font-medium text-sm ml-2">/ Intelligence Controller</span>
+            <div className="h-6 w-1.5 bg-accent rounded-full shadow-[0_0_12px_rgba(59,130,246,0.6)]" />
+            <h2 className="text-slate-900 font-black text-xl tracking-tight uppercase italic">
+              {activeTab} <span className="text-slate-300 font-bold text-sm ml-3 tracking-widest normal-case not-italic">/ Intelligence Core</span>
             </h2>
           </div>
 
-          <div className="flex items-center gap-8">
-            <button className="relative p-2 text-slate-400 hover:text-accent transition-colors">
-              <Bell size={20} />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full border-2 border-white shadow-sm" />
+          <div className="flex items-center gap-10">
+            <button className="relative p-2.5 text-slate-400 hover:text-accent transition-all hover:scale-110 active:scale-95">
+              <Bell size={22} />
+              <span className="absolute top-2.5 right-2.5 w-2.5 h-2.5 bg-rose-500 rounded-full border-[2.5px] border-white shadow-xl animate-bounce" />
             </button>
             <div className="flex items-center gap-4 text-[12px]">
               <div className="flex flex-col text-right">
-                <span className="text-slate-900 font-black">A. Sharma</span>
-                <span className="text-slate-400 font-bold text-[10px] uppercase tracking-tighter">Joint Secretary</span>
+                <span className="text-slate-900 font-black tracking-tight">Abhishek Sharma</span>
+                <span className="text-slate-400 font-bold text-[10px] uppercase tracking-widest opacity-60">Joint Secretary</span>
               </div>
-              <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-slate-50 to-slate-200 border border-slate-200 shadow-sm flex items-center justify-center font-black text-slate-500 transition-transform hover:scale-105 cursor-pointer">
+              <div className="h-12 w-12 rounded-[1.2rem] bg-gradient-to-br from-slate-800 to-slate-950 border border-slate-800 shadow-2xl flex items-center justify-center font-black text-white transition-all hover:scale-105 hover:rotate-3 cursor-pointer ring-4 ring-white">
                 AS
               </div>
             </div>
@@ -439,7 +446,7 @@ function SidebarItem({ label, icon, active, onClick, secondary }: { label: strin
       className={cn(
         "px-5 py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest cursor-pointer transition-all flex items-center gap-4 border border-transparent group",
         active
-          ? "bg-accent text-white shadow-[0_10px_25px_-5px_rgba(59,130,246,0.4)] border-white/10"
+          ? "bg-accent text-white shadow-[0_15px_30px_-5px_rgba(59,130,246,0.4)] border-white/10"
           : "text-slate-500 hover:text-white hover:bg-white/5 active:scale-95",
         secondary && "py-3 text-slate-600 opacity-40 hover:opacity-100"
       )}
@@ -458,22 +465,22 @@ function FilterSelector({ label, value, options, onChange }: { label: string, va
       <div
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
-          "flex items-center gap-3 px-5 py-2.5 border-[1.5px] rounded-2xl shadow-sm cursor-pointer transition-all hover:bg-slate-50 select-none",
-          value !== 'All' && value !== 'MoRD' ? "border-accent bg-accent/5 ring-4 ring-accent/5" : "bg-white border-slate-100",
+          "flex items-center gap-4 px-6 py-3 border-[2px] rounded-[1.2rem] shadow-sm cursor-pointer transition-all hover:bg-slate-50 select-none",
+          value !== 'All' && value !== 'MoRD' ? "border-accent bg-accent/5 ring-8 ring-accent/5" : "bg-white border-slate-100",
           "relative z-[150]"
         )}
       >
-        <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">{label}</span>
-        <span className="text-[10px] font-black text-slate-800 flex items-center gap-2 uppercase tracking-tighter">
+        <span className="text-[10px] font-black text-slate-300 uppercase tracking-[0.2em]">{label}</span>
+        <span className="text-[10px] font-black text-slate-900 flex items-center gap-3 uppercase tracking-tighter">
           {value}
-          <ChevronRight size={12} className={cn("text-slate-400 transition-transform duration-300", isOpen ? "rotate-90" : "")} />
+          <ChevronRight size={14} className={cn("text-slate-400 transition-transform duration-500", isOpen ? "rotate-90" : "")} />
         </span>
       </div>
 
       {isOpen && (
         <>
-          <div className="fixed inset-0 bg-black/[0.01] z-[9000]" onClick={() => setIsOpen(false)} />
-          <div className="absolute top-full left-0 mt-3 w-56 bg-white border border-slate-200 rounded-[2rem] shadow-[0_40px_100px_-20px_rgba(0,0,0,0.5)] py-4 z-[9999] overflow-hidden ring-1 ring-black/10 animate-in slide-in-from-top-2 duration-200">
+          <div className="fixed inset-0 bg-black/[0.05] z-[9000]" onClick={() => setIsOpen(false)} />
+          <div className="absolute top-full left-0 mt-4 w-60 bg-white border border-slate-200 rounded-[2.5rem] shadow-[0_50px_100px_-20px_rgba(0,0,0,0.4)] py-6 z-[9999] overflow-hidden ring-1 ring-black/10 animate-in slide-in-from-top-4 duration-300">
             {options.map(opt => (
               <div
                 key={opt}
@@ -482,8 +489,8 @@ function FilterSelector({ label, value, options, onChange }: { label: string, va
                   setIsOpen(false);
                 }}
                 className={cn(
-                  "px-6 py-3.5 text-[10px] font-black cursor-pointer transition-colors uppercase tracking-[0.2em]",
-                  value === opt ? "bg-accent text-white" : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
+                  "px-8 py-4 text-[10px] font-black cursor-pointer transition-all uppercase tracking-[0.3em]",
+                  value === opt ? "bg-accent text-white" : "text-slate-500 hover:bg-slate-50 hover:text-slate-950 hover:pl-10"
                 )}
               >
                 {opt}
@@ -498,11 +505,11 @@ function FilterSelector({ label, value, options, onChange }: { label: string, va
 
 function AnalysisCard({ label, value, urgent }: { label: string, value: string, urgent?: boolean }) {
   return (
-    <div className="p-5 rounded-3xl bg-white border border-slate-100 shadow-sm flex flex-col gap-1 transition-all hover:shadow-md">
-      <p className="text-[9px] font-black text-slate-300 uppercase tracking-widest">{label}</p>
+    <div className="p-6 rounded-[1.8rem] bg-white border border-slate-100 shadow-sm flex flex-col gap-2 transition-all hover:shadow-xl hover:translate-y-[-2px] group">
+      <p className="text-[9px] font-black text-slate-300 uppercase tracking-widest group-hover:text-accent transition-colors">{label}</p>
       <p className={cn(
         "text-xs font-black uppercase tracking-tight",
-        urgent ? "text-rose-600" : "text-slate-800"
+        urgent ? "text-rose-600" : "text-slate-900"
       )}>{value}</p>
     </div>
   )
@@ -513,12 +520,12 @@ function ActionBtn({ icon, label, color, onClick, active }: { icon: React.ReactN
     <button
       onClick={onClick}
       className={cn(
-        "flex-1 flex flex-col items-center justify-center gap-3 py-6 rounded-[2.5rem] border-2 font-black text-[11px] uppercase tracking-[0.2em] transition-all active:scale-95 shadow-md",
-        active ? "ring-4 ring-offset-2 ring-accent border-accent bg-accent/5" : "hover:scale-105 border-slate-100 bg-white",
+        "flex-1 flex flex-col items-center justify-center gap-4 py-8 rounded-[2.8rem] border-2 font-black text-[11px] uppercase tracking-[0.2em] transition-all active:scale-90 shadow-lg",
+        active ? "ring-[10px] ring-offset-2 ring-accent/10 border-accent bg-accent/5" : "hover:scale-105 border-slate-50 bg-white",
         color
       )}
     >
-      {icon}
+      <div className="transition-transform duration-500 group-hover:rotate-12">{icon}</div>
       {label}
     </button>
   )
@@ -526,23 +533,25 @@ function ActionBtn({ icon, label, color, onClick, active }: { icon: React.ReactN
 
 function ViewModule({ title, icon }: { title: string, icon: React.ReactNode }) {
   return (
-    <div className="flex-1 flex flex-col items-center justify-center bg-[#f8fafc] p-20 text-center animate-in fade-in zoom-in duration-500">
-      <div className="p-16 rounded-[4rem] bg-white shadow-[0_40px_1000px_-20px_rgba(0,0,0,0.1)] border border-slate-100 flex flex-col items-center gap-10 max-w-lg relative overflow-hidden group">
-        <div className="absolute top-0 left-0 w-full h-2 bg-accent opacity-20" />
-        <div className="p-8 rounded-[2.5rem] bg-slate-950 text-white shadow-2xl transition-transform duration-500 group-hover:scale-110">
+    <div className="flex-1 flex flex-col items-center justify-center bg-[#f8fafc] p-20 text-center animate-in fade-in zoom-in duration-700">
+      <div className="p-20 rounded-[5rem] bg-white shadow-[0_50px_150px_-30px_rgba(0,0,0,0.15)] border border-slate-100 flex flex-col items-center gap-12 max-w-xl relative overflow-hidden group">
+        <div className="absolute top-0 left-0 w-full h-3 bg-accent opacity-30 shadow-2xl" />
+        <div className="p-10 rounded-[3rem] bg-slate-950 text-white shadow-[0_30px_60px_-15px_rgba(0,0,0,0.5)] transition-all duration-700 group-hover:scale-110 group-hover:rotate-6">
           {icon}
         </div>
-        <div className="space-y-6">
-          <h3 className="text-3xl font-black text-slate-950 uppercase italic tracking-tighter">{title}</h3>
-          <div className="h-1.5 w-12 bg-accent mx-auto rounded-full shadow-[0_0_10px_rgba(59,130,246,0.5)]" />
-          <p className="text-slate-400 font-bold text-sm leading-relaxed max-w-xs mx-auto">
-            This executive module is currently undergoing security clearance and data synchronization with CPGRAMS core.
+        <div className="space-y-8">
+          <h3 className="text-4xl font-black text-slate-950 uppercase italic tracking-tighter">{title}</h3>
+          <div className="h-2 w-16 bg-accent mx-auto rounded-full shadow-[0_0_20px_rgba(59,130,246,0.5)]" />
+          <p className="text-slate-400 font-bold text-base leading-relaxed max-w-sm mx-auto">
+            This executive module is currently undergoing security clearance and high-speed data synchronization with the CPGRAMS central cluster. Awaiting protocol handshake.
           </p>
         </div>
-        <div className="flex items-center gap-3 bg-slate-50 px-6 py-3 rounded-full border border-slate-100">
-          <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-          <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Awaiting Linkage</span>
+        <div className="flex items-center gap-4 bg-slate-50 px-8 py-4 rounded-full border border-slate-100 shadow-inner">
+          <div className="h-3 w-3 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
+          <span className="text-[11px] font-black text-slate-500 uppercase tracking-[0.3em]">Module Online / Encrypted</span>
         </div>
+        {/* Decorative Elements */}
+        <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-accent/5 rounded-full blur-3xl" />
       </div>
     </div>
   )
