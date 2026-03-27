@@ -19,7 +19,7 @@ import {
 import { MOCK_COMPLAINTS } from '../lib/mock-data';
 import { getProcessedComplaints } from '../lib/engine';
 import { ExtendedComplaint, PriorityLevel } from '../types/schema';
-import { cn } from './layout';
+import { cn } from '../lib/utils';
 
 export default function Dashboard() {
   const [complaints, setComplaints] = useState<ExtendedComplaint[]>([]);
