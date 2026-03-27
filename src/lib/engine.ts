@@ -1,4 +1,4 @@
-import { Complaint, PriorityLevel, SuspicionFlag, AIAnalysis, SolutionRecord } from '../types/schema';
+import { Complaint, PriorityLevel, SuspicionFlag, AIAnalysis, SolutionRecord, ExtendedComplaint } from '../types/schema';
 import { HISTORICAL_SOLUTIONS } from './mock-data';
 
 const CATEGORY_SEVERITY: Record<string, number> = {
@@ -11,17 +11,18 @@ const CATEGORY_SEVERITY: Record<string, number> = {
 
 const KEYWORDS_URGENT = ['burst', 'flood', 'hospital', 'crack', 'collapse', 'fire', 'injury'];
 
-export function calculatePriority(complaint: Partial<Complaint>): { score: number, level: PriorityLevel } {
+export function calculatePriority(complaint: Partial<ExtendedComplaint>): { score: number, level: PriorityLevel } {
     let score = CATEGORY_SEVERITY[complaint.category || 'General'] || 10;
 
     // Keyword analysis
     const desc = (complaint.description || '').toLowerCase();
-    if (KEYWORDS_URGENT.some(kw => desc.includes(kw))) {
+    const subj = (complaint.subject || '').toLowerCase();
+
+    if (KEYWORDS_URGENT.some(kw => desc.includes(kw) || subj.includes(kw))) {
         score += 40;
     }
 
-    // Location-based urgency (e.g. near hospital mentioned in description)
-    if (desc.includes('hospital') || desc.includes('clinic')) {
+    if (desc.includes('hospital') || desc.includes('urgent') || desc.includes('serious')) {
         score += 20;
     }
 
@@ -50,11 +51,10 @@ export function findSuggestedSolution(complaint: Partial<Complaint>): { solution
     };
 }
 
-export function enrichComplaint(complaint: Partial<Complaint>, existingComplaints: Complaint[]): Complaint {
+export function enrichComplaint(complaint: Partial<ExtendedComplaint>, existingComplaints: ExtendedComplaint[]): ExtendedComplaint {
     const { score, level } = calculatePriority(complaint);
     const { solution, fromHistory } = findSuggestedSolution(complaint);
 
-    // Pattern detection for systemic issues (same ward + category)
     const similarInWard = existingComplaints.filter(c =>
         c.ward === complaint.ward && c.category === complaint.category
     ).length;
@@ -62,14 +62,19 @@ export function enrichComplaint(complaint: Partial<Complaint>, existingComplaint
     const flags: SuspicionFlag[] = [];
     if (similarInWard >= 2) {
         flags.push({
-            type: 'Systemic Failure',
-            reason: `Wait! This is the ${similarInWard + 1}th complaint for ${complaint.category} in ${complaint.ward} this week. Suggested systemic overhaul.`,
-            severity: 'High'
+            type: 'Frequent Pattern',
+            reason: `Previous complaints similarity`,
+            severity: 'Medium'
+        });
+        flags.push({
+            type: 'Linguistic Drift',
+            reason: `Unusual language`,
+            severity: 'Low'
         });
     }
 
     const analysis: AIAnalysis = {
-        department: complaint.category || 'General',
+        department: complaint.department || complaint.category || 'General',
         rootCause: fromHistory ? 'Probable recurring infrastructure wear' : 'New singular event',
         sentiment: score > 60 ? 'Urgent' : 'Neutral',
         reliability: 0.85
@@ -77,8 +82,8 @@ export function enrichComplaint(complaint: Partial<Complaint>, existingComplaint
 
     return {
         ...complaint,
-        id: complaint.id || `G-${Date.now()}`,
-        status: (flags.length > 0 ? 'Flagged' : 'Pending') as any,
+        id: complaint.id || `CPG-${Date.now()}`,
+        status: complaint.status || 'Pending',
         priority: level,
         priorityScore: score,
         aiAnalysis: analysis,
@@ -86,11 +91,11 @@ export function enrichComplaint(complaint: Partial<Complaint>, existingComplaint
         historicalSolutionApplied: fromHistory,
         suspicionFlags: flags,
         timestamp: complaint.timestamp || new Date().toISOString(),
-    } as Complaint;
+    } as ExtendedComplaint;
 }
 
-export function getProcessedComplaints(raw: Partial<Complaint>[]): Complaint[] {
-    const processed: Complaint[] = [];
+export function getProcessedComplaints(raw: Partial<ExtendedComplaint>[]): ExtendedComplaint[] {
+    const processed: ExtendedComplaint[] = [];
     for (const c of raw) {
         processed.push(enrichComplaint(c, processed));
     }

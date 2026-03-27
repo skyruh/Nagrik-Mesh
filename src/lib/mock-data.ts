@@ -1,4 +1,4 @@
-import { Complaint, SolutionRecord } from '../types/schema';
+import { ExtendedComplaint, SolutionRecord } from '../types/schema';
 
 export const HISTORICAL_SOLUTIONS: SolutionRecord[] = [
     {
@@ -17,41 +17,70 @@ export const HISTORICAL_SOLUTIONS: SolutionRecord[] = [
     }
 ];
 
-export const MOCK_COMPLAINTS: Partial<Complaint>[] = [
+export const MOCK_COMPLAINTS: Partial<ExtendedComplaint>[] = [
     {
-        id: 'G-2026-001',
-        category: 'Water Supply',
-        description: 'Major pipe burst near St. Mary Hospital. Water flooding the street.',
+        id: 'CPG-2023-A01',
+        citizenName: 'Ramesh Kumar',
+        department: 'MoHFW',
+        subject: 'Vaccine shorta...',
+        category: 'Health',
+        description: 'Serious delay in Pension disbursement (EPFO) submitted stref apposito deiry in mise important to pro...',
+        location: 'Ward 12',
+        ward: 'Ward 12',
+        dateFiled: '21/10/23',
+        status: 'Pending',
+        lastAction: 'Assign'
+    },
+    {
+        id: 'CPG-2023-A02',
+        citizenName: 'Priya Singh',
+        department: 'MoE',
+        subject: 'Vaccine shorta...',
+        category: 'Education',
+        description: 'School fee reimbursement pending for 3 months.',
+        location: 'District Office',
+        ward: 'Ward 5',
+        dateFiled: '21/10/23',
+        status: 'Pending',
+        lastAction: 'Assign'
+    },
+    {
+        id: 'CPG-2023-A03',
+        citizenName: 'Ramesh Kumar',
+        department: 'MoHFW',
+        subject: 'Vaccine shorta...',
+        category: 'Health',
+        description: 'Medical supply shortage in government clinic.',
         location: 'St. Mary Hospital Area',
         ward: 'Ward 12',
-        timestamp: '2026-03-26T10:30:00Z',
-        status: 'Pending'
+        dateFiled: '21/10/23',
+        status: 'Pending',
+        lastAction: 'Assign'
     },
     {
-        id: 'G-2026-002',
-        category: 'Water Supply',
-        description: 'Frequent leakage reported again in Ward 12 near the park.',
-        location: 'Central Park North',
-        ward: 'Ward 12',
-        timestamp: '2026-03-26T11:45:00Z',
-        status: 'Pending'
-    },
-    {
-        id: 'G-2026-003',
-        category: 'Electricity',
-        description: 'Street light not working since 3 days on 5th Cross.',
-        location: '5th Cross Road',
+        id: 'CPG-2023-B14',
+        citizenName: 'Priya Singh',
+        department: 'MoE',
+        subject: 'School Fee...',
+        category: 'Education',
+        description: 'Higher education fund transfer delay.',
+        location: 'Regional Office',
         ward: 'Ward 5',
-        timestamp: '2026-03-27T08:00:00Z',
-        status: 'Pending'
+        dateFiled: '21/10/23',
+        status: 'Processing',
+        lastAction: 'Verify'
     },
     {
-        id: 'G-2026-004',
-        category: 'Infrastructure',
-        description: 'Sudden structural cracks observed on the flyover pillar.',
-        location: 'Main Highway Flyover',
+        id: 'CPG-2023-C33',
+        citizenName: 'Rakesh Verma',
+        department: 'MoHFW',
+        subject: 'Railway Delay',
+        category: 'Transport',
+        description: 'Repeated delays in local train services during peak hours.',
+        location: 'Station Area',
         ward: 'Ward 8',
-        timestamp: '2026-03-27T14:00:00Z',
-        status: 'Pending'
+        dateFiled: '21/10/23',
+        status: 'Escalated',
+        lastAction: 'Escalated'
     }
 ];

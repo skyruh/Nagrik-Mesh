@@ -1,6 +1,6 @@
 export type PriorityLevel = 'Critical' | 'High' | 'Moderate' | 'Low';
 
-export type ComplaintStatus = 'Pending' | 'Flagged' | 'Resolved' | 'In Progress';
+export type ComplaintStatus = 'Pending' | 'Flagged' | 'Resolved' | 'In Progress' | 'Processing' | 'Escalated';
 
 export interface SuspicionFlag {
     type: string;
@@ -10,7 +10,7 @@ export interface SuspicionFlag {
 
 export interface AIAnalysis {
     rootCause: string;
-    sentiment: 'Frustrated' | 'Neutral' | 'Urgent';
+    sentiment: 'Frustrated' | 'Neutral' | 'Urgent' | 'Negative/Upset';
     department: string;
     reliability: number; // 0-1
 }
@@ -29,6 +29,14 @@ export interface Complaint {
     suggestedSolution: string;
     historicalSolutionApplied: boolean;
     suspicionFlags: SuspicionFlag[];
+}
+
+export interface ExtendedComplaint extends Complaint {
+    citizenName: string;
+    department: string;
+    subject: string;
+    dateFiled: string;
+    lastAction: string;
 }
 
 export interface SolutionRecord {
