@@ -1,36 +1,40 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Nagrik Mesh 🛰️
 
-## Getting Started
+**Nagrik Mesh** (Citizen Mesh) is an AI Intelligence Layer built on top of CPGRAMS. It doesn't replace existing infrastructure but automates the manual review process, prioritizes urgent grievances, and provides decision-support for government officials.
 
-First, run the development server:
+## 🚀 Key Features
+
+- **Automated Classification**: Sorts grievances into *Common*, *Occasional*, and *New* problems.
+- **Dynamic Prioritization**: Scores complaints based on category severity, keyword urgency (e.g. "hospital", "burst"), and location importance.
+- **Pattern Detection (Flagging)**: Automatically flags systemic issues or "fake resolutions" by tracking repeated failures in specific wards.
+- **Human-in-the-Loop**: Officials can Accept, Modify, or Reject AI-suggested solutions based on historical success data.
+- **Premium Admin Interface**: A high-density, glassmorphism-based dashboard that feels familiar yet high-efficiency.
+
+## 🛠️ Technology Stack
+
+- **Core**: Next.js 15 (App Router), TypeScript.
+- **Styling**: Tailwind CSS v4, Framer Motion (Animations).
+- **Icons**: Lucide React.
+- **Logic**: Custom heuristic Intelligence Engine.
+
+## 📈 Dashboard Queues
+
+1. **Critical (🔴)**: Instant action required (e.g., structural cracks, major flooding).
+2. **High (🟠)**: Urgent within 48-72 hours.
+3. **Moderate (🟡)**: Standard operational grievances.
+
+## 🚦 Getting Started
 
 ```bash
+# Install dependencies
+npm install
+
+# Run the development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
+# Build for production
+npm run build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 📄 License
+This project is built as a decision-support prototype for government administrative efficiency.
