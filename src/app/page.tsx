@@ -47,7 +47,7 @@ export default function Dashboard() {
 
   // Logical View Separation
   // Dashboard: The "Intelligence Overwatch" - High severity and systemic patterns
-  // My Queue: The "Action Pipeline" - Direct assignments for A. Sharma
+  // My Queue: Direct assignments specifically for the current officer (A. Sharma / MoRD)
   const filteredComplaints = useMemo(() => {
     return complaints.filter(c => {
       const matchesSearch =
@@ -62,12 +62,12 @@ export default function Dashboard() {
       const standardFilters = matchesSearch && matchesStatus && matchesPriority && matchesDept;
 
       if (activeTab === 'Dashboard') {
-        // Dashboard shows only high-stakes items: Critical/High priority OR Escalated status
+        // Dashboard: Highest visibility items that need executive oversight
         return standardFilters && (c.priority === 'Critical' || c.priority === 'High' || c.status === 'Escalated');
       }
 
       if (activeTab === 'My Queue') {
-        // My Queue shows only items assigned to this specific session (mocked as Pending/Processing MoRD items)
+        // My Queue: Strict operational tasks assigned to the MoRD sector (this officer)
         return standardFilters && (c.status === 'Pending' || c.status === 'Processing') && c.department === 'MoRD';
       }
 
@@ -99,8 +99,8 @@ export default function Dashboard() {
 
     return (
       <>
-        {/* Filters Strip - Z-Index 50 to stay above table */}
-        <div className="px-10 py-5 flex items-center justify-between bg-white border-b border-slate-100 shadow-sm z-50 relative">
+        {/* Filters Strip - Elevated Z-Index to break through table layering */}
+        <div className="px-10 py-5 flex items-center justify-between bg-white border-b border-slate-100 shadow-sm z-[100] relative">
           <div className="flex items-center gap-6">
             <FilterSelector
               label="Status"
@@ -138,7 +138,7 @@ export default function Dashboard() {
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
               <input
                 type="text"
-                placeholder="Grievance ID tracking..."
+                placeholder="Search active grievances..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="bg-slate-50 border border-slate-200 rounded-2xl pl-12 pr-6 py-2.5 text-xs w-72 focus:ring-4 focus:ring-accent/5 focus:border-accent outline-none font-bold text-slate-800 transition-all placeholder:text-slate-300 shadow-inner"
@@ -147,13 +147,14 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="flex-1 flex overflow-hidden">
-          {/* Table Area - Z-index 0 to stay below filters */}
-          <div className="flex-1 overflow-y-auto p-10 bg-slate-50/50 z-0">
+        {/* Main Area Container - Lower Z-Index Stacking */}
+        <div className="flex-1 flex overflow-hidden relative z-0">
+          {/* Table Area */}
+          <div className="flex-1 overflow-y-auto p-10 bg-slate-50/50">
             <div className="bg-white rounded-[2rem] shadow-xl border border-slate-200/60 overflow-hidden ring-1 ring-black/5">
               <table className="w-full text-left border-collapse text-[12px]">
                 <thead>
-                  <tr className="bg-slate-50/80 border-b border-slate-100 shadow-sm relative z-0">
+                  <tr className="bg-slate-50/80 border-b border-slate-100 shadow-sm relative z-10">
                     <th className="px-8 py-5 font-black text-slate-400 uppercase tracking-widest">Grievance ID</th>
                     <th className="px-5 py-5 font-black text-slate-400 uppercase tracking-widest">Date</th>
                     <th className="px-5 py-5 font-black text-slate-400 uppercase tracking-widest">Citizen</th>
@@ -170,11 +171,11 @@ export default function Dashboard() {
                         onClick={() => setSelectedId(c.id)}
                         className={cn(
                           "group cursor-pointer transition-all duration-300 hover:bg-slate-50 relative",
-                          selectedId === c.id ? "bg-accent/[0.03] z-0" : "bg-white"
+                          selectedId === c.id ? "bg-accent/[0.03] z-[1]" : "bg-white z-0"
                         )}
                       >
                         <td className="px-8 py-6 font-black text-accent flex items-center gap-3">
-                          {selectedId === c.id && <div className="w-1.5 h-1.5 rounded-full bg-accent animate-ping absolute left-3" />}
+                          {selectedId === c.id && <div className="w-1.5 h-1.5 rounded-full bg-accent animate-ping absolute left-3 z-[2]" />}
                           {c.id}
                         </td>
                         <td className="px-5 py-6 text-slate-400 font-medium">{c.dateFiled}</td>
@@ -384,7 +385,7 @@ export default function Dashboard() {
 
   return (
     <div className="flex h-screen w-full bg-[#f3f4f6] overflow-hidden antialiased">
-      {/* Sidebar */}
+      {/* Sidebar - Highest Level Z-Index */}
       <aside className="w-64 bg-[#232f3e] flex flex-col p-0 z-[1000] shadow-2xl shrink-0">
         <div className="p-6">
           <div className="flex items-center gap-3 mb-10">
@@ -416,9 +417,9 @@ export default function Dashboard() {
         </div>
       </aside>
 
-      <main className="flex-1 flex flex-col overflow-hidden bg-[#f8fafc] z-0">
+      <main className="flex-1 flex flex-col overflow-hidden bg-[#f8fafc] z-0 relative">
         {/* Top Header */}
-        <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-10 shrink-0 z-50 transition-all duration-300 shadow-sm relative">
+        <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-10 shrink-0 z-[110] transition-all duration-300 shadow-sm relative">
           <div className="flex items-center gap-4">
             <div className="h-5 w-1 bg-accent rounded-full" />
             <h2 className="text-slate-800 font-extrabold text-lg tracking-tight">
@@ -477,11 +478,11 @@ function FilterSelector({ label, value, options, onChange }: { label: string, va
         className={cn(
           "flex items-center gap-3 px-5 py-2.5 border-[1.5px] rounded-2xl shadow-sm cursor-pointer transition-all hover:bg-slate-50 select-none",
           value !== 'All' ? "border-accent/40 bg-accent/5 ring-4 ring-accent/5" : "bg-white border-slate-100",
-          "relative z-10"
+          "relative z-[150]"
         )}
       >
         <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">{label}</span>
-        <span className="text-[10px] font-black text-slate-800 flex items-center gap-2 uppercase tracking-tighter">
+        <span className="text-[10px] font-black text-slate-800 flex items-center gap-2 uppercase tracking-tighter transition-all">
           {value}
           <ChevronRight size={12} className={cn("text-slate-400 transition-transform duration-300", isOpen ? "rotate-90" : "")} />
         </span>
@@ -489,10 +490,11 @@ function FilterSelector({ label, value, options, onChange }: { label: string, va
 
       {isOpen && (
         <>
-          <div className="fixed inset-0 z-[999]" onClick={() => setIsOpen(false)} />
-          <div className="absolute top-full left-0 mt-3 w-56 bg-white border border-slate-200 rounded-[2rem] shadow-[0_30px_90px_-15px_rgba(0,0,0,0.4)] py-4 z-[1000] animate-in overflow-hidden ring-1 ring-black/5">
+          {/* Dark backdrop to isolate the dropdown and ensure focus */}
+          <div className="fixed inset-0 bg-black/[0.02] z-[9000]" onClick={() => setIsOpen(false)} />
+          <div className="absolute top-full left-0 mt-3 w-56 bg-white border border-slate-200 rounded-[2rem] shadow-[0_40px_100px_-20px_rgba(0,0,0,0.5)] py-4 z-[9999] animate-in slide-in-from-top-2 duration-200 overflow-hidden ring-1 ring-black/10">
             <div className="px-6 pb-2 mb-2 border-b border-slate-50">
-              <span className="text-[9px] font-black text-slate-300 uppercase tracking-[0.3em]">Filter By {label}</span>
+              <span className="text-[9px] font-black text-slate-300 uppercase tracking-[0.3em]">Select {label}</span>
             </div>
             {options.map(opt => (
               <div
@@ -503,7 +505,7 @@ function FilterSelector({ label, value, options, onChange }: { label: string, va
                 }}
                 className={cn(
                   "px-6 py-3.5 text-[10px] font-black cursor-pointer hover:bg-slate-50 transition-colors uppercase tracking-[0.2em]",
-                  value === opt ? "bg-accent/10 text-accent" : "text-slate-500"
+                  value === opt ? "bg-accent text-white" : "text-slate-500 hover:text-slate-900"
                 )}
               >
                 {opt}
@@ -546,8 +548,8 @@ function ActionBtn({ icon, label, color, onClick, active }: { icon: React.ReactN
 
 function ViewModule({ title, icon }: { title: string, icon: React.ReactNode }) {
   return (
-    <div className="flex-1 flex flex-col items-center justify-center bg-slate-50/50 p-20 text-center animate-in">
-      <div className="p-16 rounded-[4rem] bg-white shadow-2xl border border-slate-200/60 flex flex-col items-center gap-10 max-w-lg relative overflow-hidden">
+    <div className="flex-1 flex flex-col items-center justify-center bg-slate-50/50 p-20 text-center animate-in fade-in zoom-in duration-500">
+      <div className="p-16 rounded-[4rem] bg-white shadow-[0_40px_80px_-20px_rgba(0,0,0,0.1)] border border-slate-100 flex flex-col items-center gap-10 max-w-lg relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-2 bg-accent opacity-20" />
         <div className="p-8 rounded-[2.5rem] bg-slate-900 text-white shadow-2xl shadow-slate-900/20 transition-transform hover:scale-110">
           {icon}
