@@ -46,8 +46,6 @@ export default function Dashboard() {
   }, []);
 
   // Logical View Separation
-  // Dashboard: The "Intelligence Overwatch" - High severity and systemic patterns
-  // My Queue: Direct assignments specifically for the current officer (A. Sharma / MoRD)
   const filteredComplaints = useMemo(() => {
     return complaints.filter(c => {
       const matchesSearch =
@@ -62,12 +60,10 @@ export default function Dashboard() {
       const standardFilters = matchesSearch && matchesStatus && matchesPriority && matchesDept;
 
       if (activeTab === 'Dashboard') {
-        // Dashboard: Highest visibility items that need executive oversight
         return standardFilters && (c.priority === 'Critical' || c.priority === 'High' || c.status === 'Escalated');
       }
 
       if (activeTab === 'My Queue') {
-        // My Queue: Strict operational tasks assigned to the MoRD sector (this officer)
         return standardFilters && (c.status === 'Pending' || c.status === 'Processing') && c.department === 'MoRD';
       }
 
@@ -99,8 +95,8 @@ export default function Dashboard() {
 
     return (
       <>
-        {/* Filters Strip - Elevated Z-Index to break through table layering */}
-        <div className="px-10 py-5 flex items-center justify-between bg-white border-b border-slate-100 shadow-sm z-[100] relative">
+        {/* Filters Strip */}
+        <div className="px-10 py-5 flex items-center justify-between bg-white border-b border-slate-200 shadow-sm z-[100] relative">
           <div className="flex items-center gap-6">
             <FilterSelector
               label="Status"
@@ -125,7 +121,7 @@ export default function Dashboard() {
           <div className="flex items-center gap-8">
             <div className="flex flex-col gap-2 w-48">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest flex items-center gap-1.5 animate-pulse">
+                <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest flex items-center gap-1.5">
                   <Check size={10} /> Live Resolution
                 </span>
                 <span className="text-[10px] font-black text-slate-800">{stats.percentage}%</span>
@@ -147,14 +143,13 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Main Area Container - Lower Z-Index Stacking */}
         <div className="flex-1 flex overflow-hidden relative z-0">
-          {/* Table Area */}
-          <div className="flex-1 overflow-y-auto p-10 bg-slate-50/50">
+          {/* Table Area - Using the Warm background requested by User */}
+          <div className="flex-1 overflow-y-auto p-10 bg-[#fffbeb]/50">
             <div className="bg-white rounded-[2rem] shadow-xl border border-slate-200/60 overflow-hidden ring-1 ring-black/5">
               <table className="w-full text-left border-collapse text-[12px]">
                 <thead>
-                  <tr className="bg-slate-50/80 border-b border-slate-100 shadow-sm relative z-10">
+                  <tr className="bg-slate-50 border-b border-slate-100 relative z-0">
                     <th className="px-8 py-5 font-black text-slate-400 uppercase tracking-widest">Grievance ID</th>
                     <th className="px-5 py-5 font-black text-slate-400 uppercase tracking-widest">Date</th>
                     <th className="px-5 py-5 font-black text-slate-400 uppercase tracking-widest">Citizen</th>
@@ -163,75 +158,75 @@ export default function Dashboard() {
                     <th className="px-8 py-5 font-black text-slate-400 uppercase tracking-widest text-right whitespace-nowrap">Current Status</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-50 font-bold">
+                <tbody className="divide-y divide-white/20 font-bold">
                   {filteredComplaints.length > 0 ? (
-                    filteredComplaints.map((c) => (
-                      <tr
-                        key={c.id}
-                        onClick={() => setSelectedId(c.id)}
-                        className={cn(
-                          "group cursor-pointer transition-all duration-300 hover:bg-slate-50 relative",
-                          selectedId === c.id ? "bg-accent/[0.03] z-[1]" : "bg-white z-0"
-                        )}
-                      >
-                        <td className="px-8 py-6 font-black text-accent flex items-center gap-3">
-                          {selectedId === c.id && <div className="w-1.5 h-1.5 rounded-full bg-accent animate-ping absolute left-3 z-[2]" />}
-                          {c.id}
-                        </td>
-                        <td className="px-5 py-6 text-slate-400 font-medium">{c.dateFiled}</td>
-                        <td className="px-5 py-6 text-slate-800">{c.citizenName}</td>
-                        <td className="px-5 py-6 text-slate-500">{c.department}</td>
-                        <td className="px-5 py-6">
-                          <div className="flex justify-center">
+                    filteredComplaints.map((c) => {
+                      // Priority-based Row Coloring restored as per User Request
+                      const rowColor =
+                        c.priority === 'Critical' ? "bg-rose-100" :
+                          c.priority === 'High' ? "bg-amber-50" :
+                            c.priority === 'Moderate' ? "bg-yellow-50/80" : "bg-white";
+
+                      return (
+                        <tr
+                          key={c.id}
+                          onClick={() => setSelectedId(c.id)}
+                          className={cn(
+                            "group cursor-pointer transition-all duration-200",
+                            rowColor,
+                            selectedId === c.id ? "ring-2 ring-inset ring-accent z-[10] relative shadow-lg" : "hover:brightness-95",
+                            "relative"
+                          )}
+                        >
+                          <td className="px-8 py-6 font-black text-blue-600 flex items-center gap-3">
+                            {selectedId === c.id && <div className="w-1.5 h-1.5 rounded-full bg-blue-600 animate-ping absolute left-3" />}
+                            {c.id}
+                          </td>
+                          <td className="px-5 py-6 text-slate-500 font-medium">{c.dateFiled}</td>
+                          <td className="px-5 py-6 text-slate-900">{c.citizenName}</td>
+                          <td className="px-5 py-6 text-slate-600">{c.department}</td>
+                          <td className="px-5 py-6">
+                            <div className="flex justify-center">
+                              <span className={cn(
+                                "px-3 py-1.5 rounded-xl text-[10px] font-black text-white flex items-center gap-2 shadow-sm uppercase tracking-widest",
+                                c.priority === 'Critical' ? "bg-rose-500 ring-2 ring-rose-500/20" :
+                                  c.priority === 'High' ? "bg-amber-500" :
+                                    c.priority === 'Moderate' ? "bg-yellow-500" : "bg-slate-400"
+                              )}>
+                                {c.priority}
+                              </span>
+                            </div>
+                          </td>
+                          <td className="px-8 py-6 text-right">
                             <span className={cn(
-                              "px-3 py-1.5 rounded-xl text-[10px] font-black text-white flex items-center gap-2 shadow-sm uppercase tracking-widest",
-                              c.priority === 'Critical' ? "bg-rose-500 animate-pulse-slow ring-4 ring-rose-500/10" :
-                                c.priority === 'High' ? "bg-amber-500 shadow-amber-200" :
-                                  c.priority === 'Moderate' ? "bg-yellow-400" : "bg-slate-300"
+                              "px-4 py-1 rounded-full border-[1.5px] text-[10px] font-black uppercase inline-block min-w-[100px] text-center",
+                              c.status === 'Resolved' ? "bg-emerald-50 text-emerald-600 border-emerald-200" :
+                                c.status === 'Escalated' ? "bg-rose-50 text-rose-600 border-rose-200" :
+                                  c.status === 'Processing' ? "bg-blue-50 text-blue-600 border-blue-200" : "bg-slate-100 text-slate-600 border-slate-200"
                             )}>
-                              <span className="w-1 h-1 rounded-full bg-white/40" />
-                              {c.priority}
+                              {c.status}
                             </span>
-                          </div>
-                        </td>
-                        <td className="px-8 py-6 text-right">
-                          <span className={cn(
-                            "px-4 py-1 rounded-full border-[1.5px] text-[10px] font-black uppercase inline-block min-w-[100px] text-center transition-colors",
-                            c.status === 'Resolved' ? "bg-emerald-50 text-emerald-600 border-emerald-200" :
-                              c.status === 'Escalated' ? "bg-rose-50 text-rose-600 border-rose-200 shadow-sm shadow-rose-100" :
-                                c.status === 'Processing' ? "bg-blue-50 text-blue-600 border-blue-200" : "bg-slate-100 text-slate-600 border-slate-200"
-                          )}>
-                            {c.status}
-                          </span>
-                        </td>
-                      </tr>
-                    ))
+                          </td>
+                        </tr>
+                      )
+                    })
                   ) : (
                     <tr>
-                      <td colSpan={6} className="p-32 text-center">
+                      <td colSpan={6} className="p-32 text-center bg-white">
                         <div className="flex flex-col items-center gap-4 opacity-30">
                           <Search size={48} className="text-slate-300" />
-                          <p className="text-lg font-black text-slate-400 uppercase tracking-widest">No Matches Identified</p>
+                          <p className="text-lg font-black text-slate-400 uppercase tracking-widest">No Matches</p>
                         </div>
                       </td>
                     </tr>
                   )}
                 </tbody>
               </table>
-
-              <div className="bg-slate-50/50 border-t border-slate-100 px-8 py-4 flex items-center justify-between text-[11px] font-black uppercase text-slate-400 tracking-tighter">
-                <div>Displaying {filteredComplaints.length} Records</div>
-                <div className="flex items-center gap-4">
-                  <button className="h-8 w-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center opacity-50 hover:bg-slate-50"><ChevronLeft size={14} /></button>
-                  <span className="text-slate-800 px-2 font-black">Page 1</span>
-                  <button className="h-8 w-8 rounded-lg bg-white border border-slate-200 flex items-center justify-center hover:bg-slate-50"><ChevronRight size={14} /></button>
-                </div>
-              </div>
             </div>
           </div>
 
           {/* Analysis Sidebar */}
-          <div className="w-[480px] bg-white border-l border-slate-200 overflow-y-auto p-10 flex flex-col gap-10 z-20 shadow-[0_-30px_60px_-15px_rgba(0,0,0,0.1)] relative">
+          <div className="w-[480px] bg-white border-l border-slate-200 overflow-y-auto p-10 flex flex-col gap-10 z-20 shadow-2xl relative">
             {selectedComplaint ? (
               <>
                 <div className="flex items-center justify-between">
@@ -239,12 +234,12 @@ export default function Dashboard() {
                     <h3 className="font-black text-2xl text-slate-900 tracking-tighter leading-none">Analysis</h3>
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.3em] mt-1">Intelligence Module</span>
                   </div>
-                  <button onClick={() => setSelectedId(null)} className="h-10 w-10 rounded-2xl hover:bg-slate-100 flex items-center justify-center transition-colors group">
+                  <button onClick={() => setSelectedId(null)} className="h-10 w-10 rounded-2xl hover:bg-slate-100 flex items-center justify-center group">
                     <X size={24} className="text-slate-300 group-hover:text-slate-900" />
                   </button>
                 </div>
 
-                <div className="analysis-mesh p-8 rounded-[2.5rem] relative shadow-2xl overflow-hidden border border-white/20 group">
+                <div className="analysis-mesh p-8 rounded-[2.5rem] relative shadow-2xl overflow-hidden border border-white/20">
                   <div className="relative z-10 text-white space-y-8">
                     <div>
                       <span className="text-[10px] font-black uppercase tracking-[0.2em] opacity-60 mb-6 block ring-1 ring-white/20 w-fit px-3 py-1 rounded-full">Primary Target</span>
@@ -253,7 +248,6 @@ export default function Dashboard() {
                     </div>
 
                     <div className="p-6 rounded-3xl bg-black/10 backdrop-blur-sm border border-white/10">
-                      <p className="font-black text-[11px] mb-3 uppercase tracking-tighter opacity-50 underline">Raw Statement</p>
                       <p className="text-base leading-relaxed font-bold italic tracking-tight">
                         "{selectedComplaint.description}"
                       </p>
@@ -265,10 +259,10 @@ export default function Dashboard() {
                   <div className="space-y-4">
                     <div className="flex items-center justify-between px-2">
                       <div className="flex items-center gap-2">
-                        <div className="p-2 rounded-xl bg-indigo-600 text-white shadow-lg shadow-indigo-100"><Sparkles size={18} /></div>
+                        <div className="p-2 rounded-xl bg-indigo-600 text-white"><Sparkles size={18} /></div>
                         <h4 className="text-sm font-black uppercase tracking-widest text-slate-800">AI Context Engine</h4>
                       </div>
-                      <span className="text-[11px] font-black text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-100 tracking-tighter italic">94% Confidence</span>
+                      <span className="text-[11px] font-black text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-100 italic">94% Confidence</span>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
@@ -285,30 +279,9 @@ export default function Dashboard() {
                         <div className="w-1.5 h-1.5 rounded-full bg-accent" /> Pattern Match Insight
                       </div>
                       <p className="text-sm text-slate-800 font-bold leading-relaxed">
-                        {selectedComplaint.aiAnalysis.rootCause}. Automated detection suggests prioritizing this for ward field inspection.
+                        {selectedComplaint.aiAnalysis.rootCause}. Priority field inspection recommended.
                       </p>
                     </div>
-
-                    {selectedComplaint.suspicionFlags.length > 0 && (
-                      <div className="pt-2">
-                        <div className="text-[11px] font-black text-rose-500 uppercase mb-4 tracking-widest flex items-center gap-2.5 ml-2">
-                          <AlertCircle size={14} /> Risk Vectors Identified
-                        </div>
-                        <div className="space-y-3">
-                          {selectedComplaint.suspicionFlags.map((f, i) => (
-                            <div key={i} className="p-5 rounded-[1.5rem] bg-rose-50 border border-rose-100/50 flex gap-4 items-start shadow-sm transition-transform hover:translate-x-1">
-                              <div className="h-6 w-6 rounded-full bg-rose-500 flex items-center justify-center shrink-0 mt-1 shadow-rose-200 shadow-lg">
-                                <AlertCircle size={12} className="text-white" />
-                              </div>
-                              <div>
-                                <p className="text-xs font-black text-rose-900 uppercase tracking-tighter">{f.type}</p>
-                                <p className="text-[12px] font-bold text-rose-700/80 mt-1 leading-snug">{f.reason}</p>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
                   </div>
 
                   <div className="space-y-5 pt-4">
@@ -341,26 +314,6 @@ export default function Dashboard() {
                     </div>
 
                     <div className="space-y-6 pt-2">
-                      <div className="space-y-2.5">
-                        <label className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] ml-2">Channel Assignment</label>
-                        <div className="relative group">
-                          <Database className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-hover:text-accent transition-colors" size={16} />
-                          <select className="w-full text-xs font-black p-4 pl-12 rounded-[1.25rem] border border-slate-200 bg-slate-50 outline-none focus:ring-4 focus:ring-accent/10 focus:border-accent shadow-sm transition-all h-14 appearance-none cursor-pointer">
-                            <option>{selectedComplaint.department} Primary Field Office</option>
-                            <option>Cabinet Oversight Committee</option>
-                            <option>Regional Technical Commissioner</option>
-                            <option>Public Works Emergency Squad</option>
-                          </select>
-                          <ChevronRight className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-300 rotate-90 pointer-events-none" size={16} />
-                        </div>
-                      </div>
-                      <div className="space-y-2.5">
-                        <label className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] ml-2">Audit Memo</label>
-                        <textarea
-                          placeholder="Specify justification for this action..."
-                          className="w-full text-sm font-bold p-6 rounded-[1.5rem] border border-slate-200 bg-slate-50 outline-none focus:ring-4 focus:ring-accent/10 focus:border-accent min-h-[140px] resize-none shadow-inner transition-all placeholder:text-slate-200"
-                        />
-                      </div>
                       <button className="w-full bg-slate-900 text-white font-black uppercase text-xs tracking-widest py-5 rounded-[1.5rem] shadow-xl hover:bg-black transition-all active:scale-95 flex items-center justify-center gap-3">
                         Seal & Push to CPGRAMS <Check size={16} />
                       </button>
@@ -374,7 +327,7 @@ export default function Dashboard() {
                   <Inbox size={64} className="text-slate-200" />
                 </div>
                 <h3 className="font-black text-slate-400 uppercase tracking-[0.4em] text-sm mb-4">Awaiting Signal</h3>
-                <p className="text-slate-400 text-xs font-bold leading-relaxed max-w-[200px]">Identify a grievance from the primary feed <br />to initiate AI core processing.</p>
+                <p className="text-slate-400 text-xs font-bold leading-relaxed max-w-[200px]">Select a grievance from the primary feed <br />to initiate AI core processing.</p>
               </div>
             )}
           </div>
@@ -385,11 +338,11 @@ export default function Dashboard() {
 
   return (
     <div className="flex h-screen w-full bg-[#f3f4f6] overflow-hidden antialiased">
-      {/* Sidebar - Highest Level Z-Index */}
+      {/* Sidebar */}
       <aside className="w-64 bg-[#232f3e] flex flex-col p-0 z-[1000] shadow-2xl shrink-0">
         <div className="p-6">
           <div className="flex items-center gap-3 mb-10">
-            <div className="h-10 w-10 rounded-xl bg-white/10 flex items-center justify-center border border-white/5 shadow-inner">
+            <div className="h-10 w-10 rounded-xl bg-white/10 flex items-center justify-center border border-white/5">
               <img
                 src="https://upload.wikimedia.org/wikipedia/commons/5/55/Emblem_of_India.svg"
                 alt="Gov of India"
@@ -397,7 +350,7 @@ export default function Dashboard() {
               />
             </div>
             <div>
-              <h1 className="text-white font-black text-sm leading-tight tracking-wider uppercase">Nagrik Mesh</h1>
+              <h1 className="text-white font-black text-sm leading-tight uppercase">Nagrik Mesh</h1>
               <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest opacity-60">Digital India</p>
             </div>
           </div>
@@ -418,8 +371,7 @@ export default function Dashboard() {
       </aside>
 
       <main className="flex-1 flex flex-col overflow-hidden bg-[#f8fafc] z-0 relative">
-        {/* Top Header */}
-        <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-10 shrink-0 z-[110] transition-all duration-300 shadow-sm relative">
+        <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-10 shrink-0 z-[110] shadow-sm relative">
           <div className="flex items-center gap-4">
             <div className="h-5 w-1 bg-accent rounded-full" />
             <h2 className="text-slate-800 font-extrabold text-lg tracking-tight">
@@ -428,16 +380,12 @@ export default function Dashboard() {
           </div>
 
           <div className="flex items-center gap-8">
-            <button className="relative p-2 text-slate-400 hover:text-accent transition-colors">
-              <Bell size={20} />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full border-2 border-white" />
-            </button>
             <div className="flex items-center gap-4 text-[12px]">
               <div className="flex flex-col text-right">
                 <span className="text-slate-900 font-black">A. Sharma</span>
-                <span className="text-slate-400 font-bold text-[10px] uppercase">Joint Secretary</span>
+                <span className="text-slate-400 font-bold text-[10px] uppercase tracking-tighter">Joint Secretary</span>
               </div>
-              <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-slate-100 to-slate-300 border border-slate-200 shadow-sm transition-transform hover:scale-105 cursor-pointer flex items-center justify-center font-black text-slate-500">
+              <div className="h-10 w-10 rounded-2xl bg-slate-100 border border-slate-200 shadow-sm flex items-center justify-center font-black text-slate-500">
                 AS
               </div>
             </div>
@@ -459,7 +407,7 @@ function SidebarItem({ label, icon, active, onClick, secondary }: { label: strin
         active
           ? "bg-accent/10 text-white shadow-[inset_0_0_12px_rgba(59,130,246,0.3)] border-accent/20"
           : "text-slate-500 hover:text-white hover:bg-white/5 active:scale-95",
-        secondary && "py-3 text-slate-600 opacity-60 hover:opacity-100"
+        secondary && "py-3 text-slate-600 opacity-40 hover:opacity-100"
       )}
     >
       <span className={cn("transition-colors", active ? "text-accent" : "text-slate-600")}>{icon}</span>
@@ -477,12 +425,12 @@ function FilterSelector({ label, value, options, onChange }: { label: string, va
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
           "flex items-center gap-3 px-5 py-2.5 border-[1.5px] rounded-2xl shadow-sm cursor-pointer transition-all hover:bg-slate-50 select-none",
-          value !== 'All' ? "border-accent/40 bg-accent/5 ring-4 ring-accent/5" : "bg-white border-slate-100",
+          value !== 'All' ? "border-accent bg-accent/5" : "bg-white border-slate-100",
           "relative z-[150]"
         )}
       >
         <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">{label}</span>
-        <span className="text-[10px] font-black text-slate-800 flex items-center gap-2 uppercase tracking-tighter transition-all">
+        <span className="text-[10px] font-black text-slate-800 flex items-center gap-2 uppercase tracking-tighter">
           {value}
           <ChevronRight size={12} className={cn("text-slate-400 transition-transform duration-300", isOpen ? "rotate-90" : "")} />
         </span>
@@ -490,12 +438,8 @@ function FilterSelector({ label, value, options, onChange }: { label: string, va
 
       {isOpen && (
         <>
-          {/* Dark backdrop to isolate the dropdown and ensure focus */}
-          <div className="fixed inset-0 bg-black/[0.02] z-[9000]" onClick={() => setIsOpen(false)} />
-          <div className="absolute top-full left-0 mt-3 w-56 bg-white border border-slate-200 rounded-[2rem] shadow-[0_40px_100px_-20px_rgba(0,0,0,0.5)] py-4 z-[9999] animate-in slide-in-from-top-2 duration-200 overflow-hidden ring-1 ring-black/10">
-            <div className="px-6 pb-2 mb-2 border-b border-slate-50">
-              <span className="text-[9px] font-black text-slate-300 uppercase tracking-[0.3em]">Select {label}</span>
-            </div>
+          <div className="fixed inset-0 bg-black/[0.01] z-[9000]" onClick={() => setIsOpen(false)} />
+          <div className="absolute top-full left-0 mt-3 w-56 bg-white border border-slate-200 rounded-[2rem] shadow-[0_40px_100px_-20px_rgba(0,0,0,0.5)] py-4 z-[9999] overflow-hidden ring-1 ring-black/10">
             {options.map(opt => (
               <div
                 key={opt}
@@ -504,8 +448,8 @@ function FilterSelector({ label, value, options, onChange }: { label: string, va
                   setIsOpen(false);
                 }}
                 className={cn(
-                  "px-6 py-3.5 text-[10px] font-black cursor-pointer hover:bg-slate-50 transition-colors uppercase tracking-[0.2em]",
-                  value === opt ? "bg-accent text-white" : "text-slate-500 hover:text-slate-900"
+                  "px-6 py-3.5 text-[10px] font-black cursor-pointer transition-colors uppercase tracking-[0.2em]",
+                  value === opt ? "bg-accent text-white" : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
                 )}
               >
                 {opt}
@@ -520,7 +464,7 @@ function FilterSelector({ label, value, options, onChange }: { label: string, va
 
 function AnalysisCard({ label, value, urgent }: { label: string, value: string, urgent?: boolean }) {
   return (
-    <div className="p-5 rounded-3xl bg-white border border-slate-100 shadow-sm flex flex-col gap-1 transition-all hover:shadow-md hover:border-slate-200">
+    <div className="p-5 rounded-3xl bg-white border border-slate-100 shadow-sm flex flex-col gap-1">
       <p className="text-[9px] font-black text-slate-300 uppercase tracking-widest">{label}</p>
       <p className={cn(
         "text-xs font-black uppercase tracking-tight",
@@ -535,8 +479,8 @@ function ActionBtn({ icon, label, color, onClick, active }: { icon: React.ReactN
     <button
       onClick={onClick}
       className={cn(
-        "flex-1 flex flex-col items-center justify-center gap-3 py-6 rounded-[2.5rem] border-2 font-black text-[11px] uppercase tracking-[0.2em] transition-all active:scale-90 shadow-md",
-        active ? "ring-4 ring-offset-2 ring-accent border-accent bg-accent/5" : "hover:shadow-xl hover:-translate-y-1 border-slate-100 bg-white",
+        "flex-1 flex flex-col items-center justify-center gap-3 py-6 rounded-[2.5rem] border-2 font-black text-[11px] uppercase tracking-[0.2em] transition-all active:scale-95 shadow-md",
+        active ? "ring-4 ring-offset-2 ring-accent border-accent bg-accent/5" : "hover:scale-105 border-slate-100 bg-white",
         color
       )}
     >
@@ -549,21 +493,17 @@ function ActionBtn({ icon, label, color, onClick, active }: { icon: React.ReactN
 function ViewModule({ title, icon }: { title: string, icon: React.ReactNode }) {
   return (
     <div className="flex-1 flex flex-col items-center justify-center bg-slate-50/50 p-20 text-center animate-in fade-in zoom-in duration-500">
-      <div className="p-16 rounded-[4rem] bg-white shadow-[0_40px_80px_-20px_rgba(0,0,0,0.1)] border border-slate-100 flex flex-col items-center gap-10 max-w-lg relative overflow-hidden">
+      <div className="p-16 rounded-[4rem] bg-white shadow-2xl border border-slate-100 flex flex-col items-center gap-10 max-w-lg relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-2 bg-accent opacity-20" />
-        <div className="p-8 rounded-[2.5rem] bg-slate-900 text-white shadow-2xl shadow-slate-900/20 transition-transform hover:scale-110">
+        <div className="p-8 rounded-[2.5rem] bg-slate-900 text-white shadow-2xl">
           {icon}
         </div>
         <div className="space-y-4">
-          <h3 className="text-3xl font-black text-slate-900 tracking-tighter uppercase italic">{title}</h3>
+          <h3 className="text-3xl font-black text-slate-900 uppercase italic tracking-tighter">{title}</h3>
           <div className="h-1 w-12 bg-accent mx-auto rounded-full" />
           <p className="text-slate-400 font-bold text-sm leading-relaxed max-w-xs mx-auto">
             This executive module is currently undergoing security clearance and data synchronization with CPGRAMS core.
           </p>
-        </div>
-        <div className="flex items-center gap-3 bg-slate-50 px-6 py-3 rounded-full border border-slate-100">
-          <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-          <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Awaiting Linkage</span>
         </div>
       </div>
     </div>
