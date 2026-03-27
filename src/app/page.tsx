@@ -321,9 +321,9 @@ export default function Dashboard() {
                     </div>
 
                     <div className="p-8 rounded-[2rem] bg-slate-50 border border-slate-200/50 shadow-inner">
-                      <p className="text-[11px] font-black text-slate-400 uppercase mb-4 tracking-widest flex items-center gap-2">
+                      <div className="text-[11px] font-black text-slate-400 uppercase mb-4 tracking-widest flex items-center gap-2">
                         <div className="w-1.5 h-1.5 rounded-full bg-accent" /> Pattern Match Insight
-                      </p>
+                      </div>
                       <p className="text-sm text-slate-800 font-bold leading-relaxed">
                         {selectedComplaint.aiAnalysis.rootCause}. Automated detection suggests prioritizing this for ward field inspection.
                       </p>
@@ -331,9 +331,9 @@ export default function Dashboard() {
 
                     {selectedComplaint.suspicionFlags.length > 0 && (
                       <div className="pt-2">
-                        <p className="text-[11px] font-black text-rose-500 uppercase mb-4 tracking-widest flex items-center gap-2.5 ml-2">
+                        <div className="text-[11px] font-black text-rose-500 uppercase mb-4 tracking-widest flex items-center gap-2.5 ml-2">
                           <AlertCircle size={14} /> Risk Vectors Identified
-                        </p>
+                        </div>
                         <div className="space-y-3">
                           {selectedComplaint.suspicionFlags.map((f, i) => (
                             <div key={i} className="p-5 rounded-[1.5rem] bg-rose-50 border border-rose-100/50 flex gap-4 items-start shadow-sm transition-transform hover:translate-x-1">
