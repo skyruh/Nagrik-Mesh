@@ -24,7 +24,9 @@ import {
   TrendingUp,
   ShieldCheck,
   Zap,
-  Activity
+  Activity,
+  MessageSquareQuote,
+  PencilLine
 } from 'lucide-react';
 import { MOCK_COMPLAINTS } from '../lib/mock-data';
 import { getProcessedComplaints } from '../lib/engine';
@@ -35,8 +37,9 @@ export default function Dashboard() {
   const [complaints, setComplaints] = useState<ExtendedComplaint[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>('CPG-2023-001');
   const [activeTab, setActiveTab] = useState('My Queue');
+  const [officerNote, setOfficerNote] = useState(''); // New state for officer notes
 
-  // Filtering states - Default Department to 'MoRD' as it is the officer's primary queue
+  // Filtering states
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('All');
   const [priorityFilter, setPriorityFilter] = useState<string>('All');
@@ -47,7 +50,7 @@ export default function Dashboard() {
     setComplaints(processed);
   }, []);
 
-  // Combined Data Logic under "My Queue" using standard filters
+  // Combined Data Logic 
   const filteredComplaints = useMemo(() => {
     return complaints.filter(c => {
       const matchesSearch =
@@ -81,15 +84,14 @@ export default function Dashboard() {
   };
 
   const renderContent = () => {
-    // Dashboard now shows a placeholder as per user request
     if (activeTab === 'Dashboard') return <ViewModule title="System Intelligence" icon={<Zap size={48} />} />;
-    if (activeTab === 'Analytics') return <ViewModule title="Visual Intelligence" icon={<BarChart3 size={48} />} />;
+    if (activeTab === 'Analytics') return <ViewModule title="Visual Intelligence" icon={< BarChart3 size={48} />} />;
     if (activeTab === 'Reports') return <ViewModule title="Governance Archive" icon={<FileText size={48} />} />;
     if (activeTab === 'User Management') return <ViewModule title="Registry Access" icon={<ShieldCheck size={48} />} />;
 
     return (
       <>
-        {/* Filters Strip - Cleaned up to show standard dropdowns */}
+        {/* Filters Strip */}
         <div className="px-10 py-5 flex items-center justify-between bg-white border-b border-slate-200 shadow-sm z-[100] relative">
           <div className="flex items-center gap-6">
             <FilterSelector
@@ -157,7 +159,7 @@ export default function Dashboard() {
                     filteredComplaints.map((c) => {
                       const rowColor =
                         c.priority === 'Critical' ? "bg-rose-100" :
-                          c.priority === 'High' ? "bg-amber-50" :
+                          c.priority === 'High' ? "bg-amber-100" :
                             c.priority === 'Moderate' ? "bg-yellow-50/80" : "bg-white";
 
                       return (
@@ -232,20 +234,30 @@ export default function Dashboard() {
                   </button>
                 </div>
 
-                <div className="analysis-mesh p-8 rounded-[2.5rem] relative shadow-2xl overflow-hidden border border-white/20">
-                  <div className="relative z-10 text-white space-y-8">
+                {/* Enhanced Primary Target Visibility */}
+                <div className="analysis-mesh p-8 pb-12 rounded-[2.5rem] relative shadow-2xl overflow-hidden border border-white/20">
+                  <div className="relative z-10 text-white space-y-10">
                     <div>
-                      <span className="text-[10px] font-black uppercase tracking-[0.2em] opacity-60 mb-6 block ring-1 ring-white/20 w-fit px-3 py-1 rounded-full">Primary Target</span>
-                      <h4 className="font-black text-3xl tracking-tighter mb-2 italic">"{selectedComplaint.subject}"</h4>
-                      <span className="font-mono text-xs opacity-80 uppercase tracking-widest">ID: {selectedComplaint.id}</span>
+                      <div className="flex items-center gap-2 mb-6">
+                        <span className="text-[10px] font-black uppercase tracking-[0.3em] bg-white/20 backdrop-blur-md px-3 py-1.5 rounded-full ring-1 ring-white/30">Primary Target</span>
+                        <div className="h-px flex-1 bg-white/20" />
+                      </div>
+                      <h4 className="font-black text-3xl tracking-tighter leading-tight drop-shadow-lg italic">
+                        {selectedComplaint.subject}
+                      </h4>
+                      <div className="mt-4 flex items-center gap-2 font-mono text-[10px] opacity-70 uppercase tracking-widest">
+                        <Database size={10} /> {selectedComplaint.id}
+                      </div>
                     </div>
 
-                    <div className="p-6 rounded-3xl bg-black/10 backdrop-blur-sm border border-white/10">
-                      <p className="text-base leading-relaxed font-bold italic tracking-tight">
+                    <div className="p-7 rounded-[2rem] bg-slate-950/20 backdrop-blur-lg border border-white/10 shadow-inner">
+                      <p className="text-lg leading-snug font-extrabold italic tracking-tight text-white/90">
                         "{selectedComplaint.description}"
                       </p>
                     </div>
                   </div>
+                  {/* Mesh Accent */}
+                  <div className="absolute -bottom-4 -left-10 w-48 h-48 bg-white/10 blur-[60px] rounded-full" />
                 </div>
 
                 <div className="space-y-8 animate-in">
@@ -277,7 +289,29 @@ export default function Dashboard() {
                     </div>
                   </div>
 
-                  <div className="space-y-5 pt-4">
+                  {/* New Official Notes Section */}
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between px-2">
+                      <div className="flex items-center gap-2">
+                        <h4 className="text-sm font-black uppercase tracking-widest text-slate-800">Official Remarks</h4>
+                        <PencilLine size={14} className="text-slate-400" />
+                      </div>
+                      <div className="h-px flex-1 ml-4 bg-slate-100" />
+                    </div>
+                    <div className="relative group">
+                      <textarea
+                        placeholder="Append technical nodes or final resolution notes here..."
+                        value={officerNote}
+                        onChange={(e) => setOfficerNote(e.target.value)}
+                        className="w-full bg-slate-50 border-2 border-slate-100 rounded-[2rem] p-6 text-sm font-bold text-slate-800 placeholder:text-slate-300 focus:outline-none focus:border-accent/40 focus:ring-4 focus:ring-accent/5 transition-all min-h-[140px] resize-none shadow-inner"
+                      />
+                      <div className="absolute bottom-4 right-6 flex items-center gap-2 opacity-50">
+                        <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Logged: A. Sharma</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-5 pt-2">
                     <div className="flex items-center justify-between px-2">
                       <h4 className="text-sm font-black uppercase tracking-widest text-slate-800">Officer Action</h4>
                       <div className="h-px flex-1 mx-6 bg-slate-100" />
@@ -334,8 +368,8 @@ export default function Dashboard() {
       {/* Sidebar */}
       <aside className="w-64 bg-[#232f3e] flex flex-col p-0 z-[1000] shadow-2xl shrink-0">
         <div className="p-6">
-          <div className="flex items-center gap-3 mb-10">
-            <div className="h-10 w-10 rounded-xl bg-white/10 flex items-center justify-center border border-white/5 shadow-inner">
+          <div className="flex items-center gap-4 mb-10 group cursor-default">
+            <div className="h-10 w-10 rounded-xl bg-white/10 flex items-center justify-center border border-white/5 shadow-inner transition-transform group-hover:scale-110">
               <img
                 src="https://upload.wikimedia.org/wikipedia/commons/5/55/Emblem_of_India.svg"
                 alt="Gov of India"
@@ -357,7 +391,7 @@ export default function Dashboard() {
             <SidebarItem label="User Management" icon={<Users size={16} />} active={activeTab === 'User Management'} onClick={() => setActiveTab('User Management')} />
           </nav>
         </div>
-        <div className="mt-auto p-6 space-y-1 border-t border-white/5 bg-black/10">
+        <div className="mt-auto p-6 space-y-1 border-t border-white/5 bg-black/10 text-center">
           <SidebarItem label="Settings" icon={<Activity size={16} />} secondary />
           <SidebarItem label="Help Center" secondary />
         </div>
@@ -402,7 +436,7 @@ function SidebarItem({ label, icon, active, onClick, secondary }: { label: strin
       className={cn(
         "px-5 py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest cursor-pointer transition-all flex items-center gap-4 border border-transparent group",
         active
-          ? "bg-accent text-white shadow-[0_10px_20px_-5px_rgba(59,130,246,0.4)] border-white/10"
+          ? "bg-accent text-white shadow-[0_10px_25px_-5px_rgba(59,130,246,0.4)] border-white/10"
           : "text-slate-500 hover:text-white hover:bg-white/5 active:scale-95",
         secondary && "py-3 text-slate-600 opacity-40 hover:opacity-100"
       )}
@@ -490,7 +524,7 @@ function ActionBtn({ icon, label, color, onClick, active }: { icon: React.ReactN
 function ViewModule({ title, icon }: { title: string, icon: React.ReactNode }) {
   return (
     <div className="flex-1 flex flex-col items-center justify-center bg-[#f8fafc] p-20 text-center animate-in fade-in zoom-in duration-500">
-      <div className="p-16 rounded-[4rem] bg-white shadow-[0_40px_100px_-20px_rgba(0,0,0,0.1)] border border-slate-100 flex flex-col items-center gap-10 max-w-lg relative overflow-hidden group">
+      <div className="p-16 rounded-[4rem] bg-white shadow-[0_40px_1000px_-20px_rgba(0,0,0,0.1)] border border-slate-100 flex flex-col items-center gap-10 max-w-lg relative overflow-hidden group">
         <div className="absolute top-0 left-0 w-full h-2 bg-accent opacity-20" />
         <div className="p-8 rounded-[2.5rem] bg-slate-950 text-white shadow-2xl transition-transform duration-500 group-hover:scale-110">
           {icon}
