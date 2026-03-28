@@ -439,7 +439,7 @@ function AnalyticsView({ complaints, processedIds }: any) {
       <div className="grid grid-cols-12 gap-8 h-[500px]">
         <div className="col-span-8 bg-white rounded-[3rem] p-10 shadow-xl border border-slate-100 flex flex-col gap-8 relative overflow-hidden group">
           <div className="flex items-center justify-between relative z-10">
-            <div><h3 className="text-sm font-black uppercase tracking-widest text-slate-400">System Throughput</h3><p className="text-2xl font-black text-slate-900 tracking-tighter italic uppercase">Incidence Velocity</p></div>
+            <div><h3 className="text-sm font-black uppercase tracking-widest text-slate-400">System Throughput</h3><p className="text-2xl font-black text-slate-900 tracking-tighter italic uppercase">Problem Per Day</p></div>
             <div className="px-4 py-2 bg-slate-50 rounded-xl border border-slate-100 text-[10px] font-black uppercase text-slate-500">Live Telemetry</div>
           </div>
           <div className="flex-1 w-full min-h-0">
@@ -749,7 +749,7 @@ function DashboardView({ complaints, processedIds, onSelect }: any) {
         {/* Primary Chart */}
         <div className="col-span-12 xl:col-span-7 bg-white rounded-[3rem] p-10 shadow-xl border border-slate-100 flex flex-col gap-8 relative overflow-hidden group">
           <div className="flex items-center justify-between relative z-10">
-            <div><h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Tactical Telemetry</h3><p className="text-2xl font-black text-slate-900 tracking-tighter italic uppercase">Incidence Velocity</p></div>
+            <div><h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Tactical Telemetry</h3><p className="text-2xl font-black text-slate-900 tracking-tighter italic uppercase">Problem Per Day</p></div>
             <div className="px-4 py-2 bg-blue-50 text-blue-600 rounded-xl text-[10px] font-black uppercase tracking-widest border border-blue-100">Live Stream</div>
           </div>
           <div className="h-[280px] w-full min-h-0">
